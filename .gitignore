@@ -1,3 +1,7 @@
+# bot identity-specific files
+snuggles.sqlite
+credentials.json
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

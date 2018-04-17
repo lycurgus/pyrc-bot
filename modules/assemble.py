@@ -1,0 +1,49 @@
+import os,sys,inspect
+currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
+parentdir = os.path.dirname(currentdir)
+sys.path.insert(0,parentdir)
+
+import module
+import util
+import re
+import random
+
+@module.type("PRIVMSG")
+@module.regex(r"^\s*bots,?\s+assemble\s*!\s*$")
+@module.timeout("assemble")
+def bots_assemble(bot,message,regex_matches=None):
+	if bot.awake:
+		resp = random.choice([
+			"the almighty fluffiest",
+			"longest ears in the West",
+			"queen of the carrots",
+			"professional hugger"
+		])
+		bot.commands.privmsg(message.replyto,"SnuggleBunny, {}!".format(resp))
+	else:
+		bot.commands.action(message.replyto,"strikes a pose in her sleep")
+
+@module.type("PRIVMSG")
+@module.regex(r"^\s*bots,?\s+assemble\s*$")
+@module.timeout("assemble")
+def bots_assemble_i_guess(bot,message,regex_matches=None):
+	if bot.awake:
+		if util.chance(0.5):
+			bot.commands.action(message.replyto,"half-assedly strikes a pose")
+		else:
+			bot.commands.privmsg(message.replyto,"yeah i'm here")
+	else:
+		if util.chance(0.4):
+			bot.commands.action(message.replyto,"snores")
+
+assemble = module.Module("assemble")
+assemble.add_function(bots_assemble)
+assemble.add_function(bots_assemble_i_guess)
+assemble.add_timeout("assemble",seconds=30)
+
+#	elif line.rest.lower() in ["bots, roll call","bots: roll call","who here is a bot?","who are the bots?","who here is a bot","who are the bots"]:
+#		if bot.awake:
+#			bot.commands.action(replyto,"raises a paw")
+#			bot.commands.privmsg(replyto,":)")
+#		else:
+#			bot.commands.action(replyto,"raises a paw sleepily")
