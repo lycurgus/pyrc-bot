@@ -16,7 +16,7 @@ class Bot:
 	def __getattribute__(self,name): #TODO remove this once switch to getcustom() is done for 'asleep'
 		if name == "awake":
 			print("warning - you shouldn't be accessing bot.awake!")
-			return !self.getcustom('asleep')
+			return not self.getcustom('asleep')
 		else:
 			return super().__getattribute__(name)
 
