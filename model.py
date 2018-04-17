@@ -6,7 +6,6 @@ import re
 import queue
 import threading
 import datetime
-import math
 import random
 from IrcQueuedCommands import IRCQueuedCommands
 from blinker import signal
@@ -70,7 +69,6 @@ class Bot:
 		self.failedmodules = []
 		self.load_modules()
 		# new stuff ^
-		#self.awake = chance(self.get_t(self.gmtoffset))
 		self.run()
 
 	def clock_tick(self):
@@ -368,34 +366,6 @@ class Bot:
 			if self.tick:
 				pass
 
-	def get_t(self, offset):
-		return #TODO chase this up the path? how to do initial check??
-		t = ((time.time() + offset) % 86400) / 60 #minutes - 1440 to a day
-		today = datetime.datetime.today().weekday()
-		wake = self.waketime * 60
-		sleep = self.bedtime * 60
-		if today in [4,5]:#friday or saturday
-			sleep += 60
-		if today in [5,6]:#saturday or sunday
-			wake += 60
-		c = 0.5*(math.tanh(0.1*(t-wake)) + math.tanh(-0.1*(t-sleep)))
-		return c
-
-	def check_awake(self):
-		return #TODO remove this once it's confirmed okay
-		t = self.get_t(self.gmtoffset)
-		old_wake = self.awake
-		self.timer('wakecheck') #create if not present
-		if self.timer('wakecheck').get():
-			self.awake = chance(t)
-		if self.awake != old_wake:
-			if self.awake:
-				signal("BOT-wake").send(bot=self)
-			else:
-				signal("BOT-sleep").send(bot=self)
-			self.timer('wakecheck').set_timeout(hours(2))
-			self.timer('wakecheck').set()
-
 	def get_config(self):
 		#self.db = None
 		if not self.db:
@@ -531,4 +501,3 @@ class TickInterval:
 	def __init__(self,interval,enabled):
 		self.interval = interval
 		self.enabled = enabled
-
