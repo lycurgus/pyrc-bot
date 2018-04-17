@@ -9,11 +9,8 @@ import util
 
 @module.type("PRIVMSG")
 @module.regex(r"(?:(?:g?'?|good)? ?morning),?.*? ([^\b]+?)\b.*")
-#@module.regex(r"(?:(?:g?'?|good)? ?morning),?.* ([^\b]*)\b.*")
 def good_morning(bot,message,regex_matches=None):
-	#print('someone said good morning')
 	if not regex_matches.group(1).lower() in util.lower(bot.names):
-		#TODO this seems to fail if someone says e.g. "good morning snuggles!" - it gets parsed as "snuggles!" which doesn't match. is ! a \b ?
 		return
 	if not bot.timeout("justwokeorslept").get() and bot.awake:
 		replies = [
@@ -26,9 +23,7 @@ def good_morning(bot,message,regex_matches=None):
 
 @module.type("PRIVMSG")
 @module.regex(r"(?:(?:g?'?|good)? ?night),?.*? ([^\b]+?)\b.*")
-#@module.regex(r"(?:(?:g?'?|good)? ?night),?.* ([^\b]*)\b.*")
 def good_night(bot,message,regex_matches=None):
-	#print('someone said good night')
 	if not regex_matches.group(1).lower() in util.lower(bot.names):
 		return
 	if not bot.timeout("justwokeorslept").get() and not bot.awake:

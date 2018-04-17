@@ -1,8 +1,5 @@
 #!/usr/bin/env python3
 
-#TODO colours for terminal output
-#https://gist.github.com/martin-ueding/4007035
-
 from blinker import signal
 import datetime
 import re

@@ -124,7 +124,6 @@ class Module:
 					elif a == "user-present":
 						if message.channel:
 							checks.append(any([u.lower() in list(map(str.lower, bot.channels[message.channel].users.keys())) for u in at]))
-							#checks.append(any([u.lower() in [cu.lower() for cu in self.channels[message.channel].users.keys()] for u in at]))
 						else:
 							checks.append(False)
 					elif a == "user-not-present":
@@ -177,7 +176,6 @@ class Module:
 				if all(checks):
 					matches.append((function,match))
 			return matches
-
 
 def ModuleException(Exception): pass
 
@@ -360,4 +358,3 @@ def user_not_present(users):
 		setattr(wrapper,"user-not-present",util.listify(users))
 		return wrapper
 	return user_not_present_decorator
-
