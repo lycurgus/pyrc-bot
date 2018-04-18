@@ -12,7 +12,7 @@ import re
 @module.timer("breaksilence")
 def break_silence(bot,message,regex_matches=None):
 	channel = random.choice(list(bot.channels.keys()))
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		actions = [
 				"flicks her ears",
 				"twitches her nose",

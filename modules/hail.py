@@ -8,7 +8,7 @@ import module
 @module.command(["all hail! /o/","all hail"])
 @module.timeout("hail")
 def all_hail(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(message.replyto,"All hail! /o/")
 
 hail = module.Module("hail")

@@ -12,13 +12,6 @@ from blinker import signal
 from util import random_characters, reload, hours, minutes, days, Timer, listify, chance, lower
 
 class Bot:
-	def __getattribute__(self,name): #TODO remove this once switch to getcustom() is done for 'asleep'
-		if name == "awake":
-			print("warning - you shouldn't be accessing bot.awake!")
-			return not self.getcustom('asleep')
-		else:
-			return super().__getattribute__(name)
-
 	def __init__(self,servername,transport):
 		self.ignoreautojointemp = ["#limittheory","#r/linux"]
 		self.ignoreautojointemp = []

@@ -12,7 +12,7 @@ import util
 def good_morning(bot,message,regex_matches=None):
 	if not regex_matches.group(1).lower() in util.lower(bot.names):
 		return
-	if not bot.timeout("justwokeorslept").get() and bot.awake:
+	if not bot.timeout("justwokeorslept").get() and not bot.getcustom("asleep"):
 		replies = [
 				"good morning! :)",
 				"g'morning, {}!".format(message.sender),
@@ -26,7 +26,7 @@ def good_morning(bot,message,regex_matches=None):
 def good_night(bot,message,regex_matches=None):
 	if not regex_matches.group(1).lower() in util.lower(bot.names):
 		return
-	if not bot.timeout("justwokeorslept").get() and not bot.awake:
+	if not bot.timeout("justwokeorslept").get() and bot.getcustom("asleep"):
 		actions = [
 				"mumbles a sleepy thankyou",
 				"smiles and snuggles into the sheets",

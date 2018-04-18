@@ -26,13 +26,13 @@ def beep_boop(bot,message,regex_matches=None):
 
 @module.command("pew")
 def pew(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		if util.chance(0.01):
 			bot.commands.privmsg(message.replyto,"pew pew")
 
 @module.command("carrots")
 def carrots(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(message.replyto,"CARROTS!")
 	else:
 		bot.commands.action(message.replyto,"sleepily extends a paw to receive a carrot")
@@ -50,7 +50,7 @@ def lenny(bot,message,regex_matches=None):
 @module.regex(r".*\b(?:ohai|hi|hey|hello|hiya|howdy)\b.*")
 @module.direct
 def greet(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		reply = random.choice([
 			"hi {} :)".format(message.sender),
 			"hey there!",
@@ -63,14 +63,14 @@ def greet(bot,message,regex_matches=None):
 @module.regex(r"^beep$")
 @module.timeout("beep")
 def beep(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(message.replyto,"boop")
 	else:
 		bot.commands.privmsg(message.replyto,"peeps softly in her sleep")
 
 @module.regex(r"^moon$")
 def moon(bot,message,regex_matches=None):
-	if bot.awake or (util.chance(0.25)):
+	if not bot.getcustom("asleep") or (util.chance(0.25)):
 		bot.commands.privmsg(message.replyto,"hlör u fang axaxaxas mlö")
 		c = {
 			'nick': bot.boss,
@@ -102,7 +102,7 @@ def pwn_response(bot,message,regex_matches=None):
 @module.regex(r"drags a rabbit up onto a stone slab")
 @module.action
 def dont_sacrifice_bunny(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		responses = {
 				'say': [
 					"i don't like that one bit, sir",
@@ -137,7 +137,7 @@ def rollcall():
 	if True:
 		pass
 	elif line.rest.lower() in ["bots, roll call","bots: roll call","who here is a bot?","who are the bots?","who here is a bot","who are the bots"]:
-		if bot.awake:
+		if not bot.getcustom("asleep"):
 			bot.commands.action(replyto,"raises a paw")
 			bot.commands.privmsg(replyto,":)")
 		else:
@@ -149,7 +149,7 @@ def rollcall():
 def poked(bot,message,regex_matches=None):
 	if not regex_matches.group(1).lower() in list(map(str.lower,bot.names)):
 		return
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.action(message.replyto,random.choice(["squeaks adorably","glares adorably at {}".format(message.sender)]))
 	else:
 		bot.commands.action(message.replyto,random.choice(["squirms in her sleep","snores"]))
@@ -159,7 +159,7 @@ def poked(bot,message,regex_matches=None):
 @module.regex(r"puts him in a pretty vase")
 def vase_rescue(bot,message,regex_matches=None):
 	print("someone is in a vase")
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		if util.chance(0.4):
 			bot.commands.action(replyto,"waddles up to the vase")
 			bot.commands.action(replyto,"stands on her hind legs")
@@ -196,7 +196,7 @@ def whats_a_login(bot,message,regex_matches=None):
 #@module.disable
 @module.regex(r"are you a (?:boy|girl)(?: or a (?:girl|boy))?\??")
 def professor_oak(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(message.replyto,"i'm a doe :)")
 	else:
 		bot.commands.action(message.replyto,"waves her paw dismissively at {}".format(message.sender))
@@ -209,7 +209,6 @@ def module_report(bot,message,regex_matches=None):
 	print('{} failed'.format(len(bot.failedmodules)))
 	if len(bot.failedmodules):
 		bot.commands.privmsg('failed modules: {}'.format(' ,'.join(bot.failedmodules)))
-
 
 general = module.Module("general")
 general.add_function(poop)

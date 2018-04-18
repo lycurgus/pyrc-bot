@@ -13,7 +13,7 @@ def youre_welcome(bot,message,regex_matches=None):
 	if not regex_matches.group(1).lower() in list(map(str.lower,bot.names)):
 		#print('person being thanked was: {}'.format(regex_matches.group(1)))
 		return
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		thanks = random.choice(["you're welcome","no problem","sure thing","any time"])
 		target = ""
 		if util.chance(0.3):

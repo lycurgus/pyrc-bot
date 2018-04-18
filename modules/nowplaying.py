@@ -16,7 +16,7 @@ def nowplaying_fn(bot,message,regex_matches=None):
 	from hashlib import md5
 	from util import random_characters
 	#from urllib.parse import quote_plus
-	if not bot.awake:
+	if bot.getcustom("asleep"):
 		if util.chance(0.5):
 			return
 	yt = regex_matches.group(1) == "yt"

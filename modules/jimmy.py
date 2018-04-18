@@ -14,7 +14,7 @@ jimmy_nicks = ["jimmy","jimmy42","cha0zzb0t","blob","sleepybalrog","hungrybalrog
 @module.type("PRIVMSG")
 @module.command("!bed")
 def gotobed(bot,message,regex_matches=None):
-	if not bot.awake:
+	if bot.getcustom("asleep"):
 		bot.commands.action(message.replyto,"is already in bed")
 		return
 	bot.commands.action(message.replyto,"puts on a scary mask")
@@ -25,7 +25,7 @@ def gotobed(bot,message,regex_matches=None):
 @module.type("PRIVMSG")
 @module.command("!work")
 def backtowork(bot,message,regex_matches=None):
-	if not bot.awake:
+	if bot.getcustom("asleep"):
 		bot.commands.action(message.replyto,"is too sleepy to work")
 		return
 	bot.commands.action(message.replyto,"puts on a scary mask")
@@ -57,7 +57,7 @@ def timecheck(bot,message,regex_matches=None):
 @module.type("PRIVMSG")
 @module.regex(r"^!no+$")
 def noooo(bot,message,regex_matches=None):
-	if not bot.awake:
+	if bot.getcustom("asleep"):
 		bot.commands.action(message.replyto,"is too sleepy to be upset")
 		return
 	bot.commands.action(message.replyto,"falls to her knees")

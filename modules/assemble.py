@@ -12,7 +12,7 @@ import random
 @module.regex(r"^\s*bots,?\s+assemble\s*!\s*$")
 @module.timeout("assemble")
 def bots_assemble(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		resp = random.choice([
 			"the almighty fluffiest",
 			"longest ears in the West",
@@ -27,7 +27,7 @@ def bots_assemble(bot,message,regex_matches=None):
 @module.regex(r"^\s*bots,?\s+assemble\s*$")
 @module.timeout("assemble")
 def bots_assemble_i_guess(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		if util.chance(0.5):
 			bot.commands.action(message.replyto,"half-assedly strikes a pose")
 		else:
@@ -42,7 +42,7 @@ assemble.add_function(bots_assemble_i_guess)
 assemble.add_timeout("assemble",seconds=30)
 
 #	elif line.rest.lower() in ["bots, roll call","bots: roll call","who here is a bot?","who are the bots?","who here is a bot","who are the bots"]:
-#		if bot.awake:
+#		if not bot.getcustom("asleep"):
 #			bot.commands.action(replyto,"raises a paw")
 #			bot.commands.privmsg(replyto,":)")
 #		else:

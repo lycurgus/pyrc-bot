@@ -39,7 +39,7 @@ def bot_quit(bot,message,regex_matches=None):
 	#	quitmessage = line.rest.split(":",1)[1].strip()
 	if len(quitmessage) == 0:
 		quitmessage = "boss told me to!"
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(message.replyto,"bye!")
 	else:
 		words = ["knitting","sitting","fitting","quitting"]
@@ -93,7 +93,7 @@ def bot_connect(bot,message,regex_matches=None):
 @module.direct
 @module.type("PRIVMSG")
 def unauthorised_connect(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(message.replyto,"you're not the boss of me, {}".format(message.sender))
 	else:
 		bot.commands.action(message.replyto,"rolls over in her sleep to ignore {}".format(message.sender))
@@ -121,7 +121,7 @@ def bot_disconnect(bot,message,regex_matches=None):
 @module.direct
 @module.type("PRIVMSG")
 def unauthorised_disconnect(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(replyto,"you're not the boss of me, {}".format(line.nick))
 	else:
 		bot.commands.action(replyto,"rolls over in her sleep to ignore {}".format(line.nick))
@@ -133,7 +133,7 @@ def activity_report(bot,message,regex_matches=None):
 	if target in bot.channels.keys():
 		ai = bot.channels[target].activityindex
 		print(ai)
-		if bot.awake:
+		if not bot.getcustom("asleep"):
 			bot.commands.privmsg(message.replyto,"i'd call it about a {}".format(round(ai)))
 		else:
 			bot.commands.action(message.replyto,"stirs from sleep to hold up a sign saying {}".format(round(ai)))

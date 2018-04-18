@@ -10,7 +10,7 @@ import util
 @module.type("PRIVMSG")
 @module.regex(r".*\b([^\b]+)-ass (.+?)\b")
 def ass_car(bot,message,regex_matches=None):
-	if not bot.awake:
+	if bot.getcustom("asleep"):
 		return
 	sweet = regex_matches.group(1)
 	car = regex_matches.group(2)

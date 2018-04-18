@@ -10,7 +10,7 @@ import util
 @module.type("PRIVMSG")
 @module.regex(r"\bquack\b")
 def react_duck(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		if util.chance(0.3):
 			bot.commands.privmsg(message.replyto,"a duck!")
 			bot.commands.action(message.replyto,"pounces on the ducky")

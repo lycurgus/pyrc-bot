@@ -9,7 +9,7 @@ import module
 @module.timeout("badabing")
 @module.type("PRIVMSG")
 def badaboom(bot,message,regex_matches=None):
-	if not bot.awake:
+	if bot.getcustom("asleep"):
 		if util.chance(0.2):
 			bot.commands.privmsg(message.replyto,"mumbles 'big bad-a boom' in her sleep")
 		return

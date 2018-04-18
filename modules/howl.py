@@ -10,7 +10,7 @@ import random
 @module.regex(r"^a+w+oo+!*$")
 @module.timeout("howl")
 def howl_fn(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		a = "a" * random.randint(1,3)
 		w = "w" * random.randint(2,4)
 		o = "o" * random.randint(4,7)

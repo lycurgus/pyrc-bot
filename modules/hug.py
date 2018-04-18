@@ -14,7 +14,7 @@ import util
 @module.regex(r"gives (.*)(?:a )?hugs?")
 def givehug(bot,message,regex_matches=None):
 	if regex_matches.group(1).lower() in util.lower(bot.names):
-		if bot.awake:
+		if not bot.getcustom("asleep"):
 			bot.commands.action(message.replyto,"hugs {} back".format(message.sender))
 		else:
 			bot.commands.action(message.replyto,"sleepily hugs {} back".format(message.sender))
@@ -25,12 +25,12 @@ def hugs(bot,message,regex_matches=None):
 	hugee = regex_matches.group(1).split(" ")[0]
 	print("hugee was {}".format(hugee))
 	if hugee.lower() in util.lower(bot.names):
-		if bot.awake:
+		if not bot.getcustom("asleep"):
 			bot.commands.action(message.replyto,"hugs {} back".format(message.sender))
 		else:
 			bot.commands.action(message.replyto,"sleepily hugs {} back".format(message.sender))
 	else:
-		if util.chance(0.1) and bot.awake:
+		if util.chance(0.1) and not bot.getcustom("asleep"):
 			bot.commands.action(message.replyto,"joins in the hug with {hugger} and {huggee}".format(hugger=message.sender,huggee=hugee))
 
 @module.type("PRIVMSG")
@@ -38,7 +38,7 @@ def hugs(bot,message,regex_matches=None):
 @module.regex(r"gives (.*)(?:a )?snuggles?")
 def givesnuggle(bot,message,regex_matches=None):
 	if regex_matches.group(1).lower() in util.lower(bot.names):
-		if bot.awake:
+		if not bot.getcustom("asleep"):
 			bot.commands.action(message.replyto,"snuggles {} back".format(message.sender))
 		else:
 			bot.commands.action(message.replyto,"sleepily snuggles {}".format(message.sender))
@@ -49,7 +49,7 @@ def givesnuggle(bot,message,regex_matches=None):
 def snuggle(bot,message,regex_matches=None):
 	hugee = regex_matches.group(1).split(" ")[0]
 	if hugee.lower() in util.lower(bot.names):
-		if bot.awake:
+		if not bot.getcustom("asleep"):
 			bot.commands.action(message.replyto,"snuggles {} back".format(message.sender))
 		else:
 			bot.commands.action(message.replyto,"sleepily snuggles {}".format(message.sender))

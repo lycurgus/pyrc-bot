@@ -10,7 +10,7 @@ import util
 @module.timeout("dolphins")
 @module.type("PRIVMSG")
 def dolphin_func(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(message.replyto,"oh, a dolphin")
 		if util.chance(0.98):
 			bot.commands.action(message.replyto,"whistles and clicks")

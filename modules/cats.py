@@ -10,7 +10,7 @@ import util
 @module.type("PRIVMSG")
 @module.regex(r"\bmeow\b")
 def react_cat(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom("asleep"):
 		if util.chance(0.3):
 			bot.commands.privmsg(message.replyto,"oh no, a cat!")
 			bot.commands.action(message.replyto,"runs and hides")

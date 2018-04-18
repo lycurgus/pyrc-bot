@@ -9,9 +9,6 @@ from datetime import datetime
 import time
 import math
 
-#TODO invert the sense of all these and change the name to "asleep" - so that other modules will get a reasonable "False" or "None" if they try to get the property
-#TODO so switch all checks of if bot.awake to if not bot.getcustom('asleep')
-
 def get_t(offset,waketime,bedtime):
 	t = ((time.time() + offset) % 86400) / 60 #minutes - 1440 to a day
 	today = datetime.today().weekday()
