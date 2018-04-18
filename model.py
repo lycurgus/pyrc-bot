@@ -35,10 +35,7 @@ class Bot:
 		self.channels_awaiting_auth = []
 		self.timers = {}
 		self.counters = {}
-		#self.clockintervals = {}
-		#self.clockintervals['five'] = TickInterval(minutes(5),True)
-		#self.clockintervals['hour'] = TickInterval(hours(1),True)
-		#self.clockintervals['two_hour'] = TickInterval(hours(2),True)
+		self.seen_users = {}
 		self.expectations = []
 		self.tick = 0
 		sig_tick = signal("TICK-base")

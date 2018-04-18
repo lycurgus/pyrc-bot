@@ -233,6 +233,11 @@ class Channel:
 				self.activityindex = 0
 		#print('channel activity for {} is {}'.format(self.name,self.activityindex))
 
+class NickStatus:
+	def __init__(self,active):
+		self.active = active
+		self.time = datetime.datetime.now()
+
 def input_prefill(prompt,text):
 	def hook():
 		readline.insert_text(text)
@@ -249,11 +254,11 @@ def chance(value=0):
 	return (random.random() < value)
 
 def find_on_server(bot,nick):
-	bot.whois(nick)
-	#need to:
-	# send a whois
-	# wait a while
-	# check the bot's internal record of any WHOIS replies recieved
+	bot.whois(nick) #issue a WHOIS request
+	sleep(5) #wait a bit to let a response come in - can we yield or similar and get awoken when one comes..?
+	if nick in bot.seen_users.keys():
+		return bot.seen_users[nick].active
+	return False #if no reply from the server in time assume they were absent
 
 def tick():
 	return "✓"

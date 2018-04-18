@@ -6,7 +6,7 @@ sys.path.insert(0,parentdir)
 import module
 import re
 from datetime import datetime
-from util import Channel
+from util import Channel, NickStatus
 from blinker import signal
 
 #TODO define the base tick as a timed function....?
@@ -176,6 +176,13 @@ def msg_301(bot,line,regex_matches=None):
 	print("user {} is away: {}".format(line.parameters[1],line.rest))
 
 @module.line
+@module.type("311") #RPL_WHOISUSER
+def read_whoisuser(bot,line,regex_matches=None):
+	user = line.parameters[0]
+	status = NickStatus(True)
+	bot.seen_users[user] = status
+
+@module.line
 @module.type("332") #channel topic
 def read_chantopic(bot,line,regex_matches=None):
 	channel = line.parameters[1]
@@ -211,6 +218,12 @@ def handle_nameslist(bot,line,regex_matches=None):
 			print("{} left unnoticed".format(", ".join([d for d in chanusers if d.lower() not in [nl.lower() for nl in nameslist]])))
 		else:
 			print("{} joined unnoticed".format(", ".join([s for s in nameslist if s.lower() not in [cu.lower() for cu in chanusers]])))
+
+@module.line
+@module.type("401") #ERR_NOSUCHNICK
+	user = line.parameters[0]
+	status = NickStatus(False)
+	bot.seen_users[user] = status
 
 @module.line
 @module.type("433") #nickname in use
