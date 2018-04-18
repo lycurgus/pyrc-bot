@@ -4,6 +4,7 @@ from blinker import signal
 import datetime
 import re
 import random
+from time import sleep
 
 class Regexes:
 	ctcp = re.compile(r'^\x01(.*)(?: (.*))?\x01$')
