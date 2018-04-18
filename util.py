@@ -256,7 +256,7 @@ def chance(value=0):
 
 def find_on_server(bot,nick):
 	bot.commands.whois(nick) #issue a WHOIS request
-	sleep(5) #wait a bit to let a response come in - can we yield or similar and get awoken when one comes..?
+	sleep(10) #wait a bit to let a response come in - can we yield or similar and get awoken when one comes..?
 	if nick in bot.seen_users.keys():
 		return bot.seen_users[nick].active
 	return False #if no reply from the server in time assume they were absent
