@@ -248,6 +248,13 @@ def chance(value=0):
 		value = 0
 	return (random.random() < value)
 
+def find_on_server(bot,nick):
+	bot.whois(nick)
+	#need to:
+	# send a whois
+	# wait a while
+	# check the bot's internal record of any WHOIS replies recieved
+
 def tick():
 	return "✓"
 

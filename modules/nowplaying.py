@@ -51,8 +51,21 @@ def nowplaying_fn(bot,message,regex_matches=None):
 		artist = entry.attrib['artist']
 		track = entry.attrib['title']
 		if yt:
+			#if bot.find_on_server("taiya") #should execute a WHOIS behind the scenes and block for a few seconds for a reply
+			#util.find_on_server(bot,"taiya") #better signature? doesn't need to be on the bot instance, just have it passed in
+			#issue a whois, wait 5 seconds, then check internal listing of whois info (nick, found?, timestampe of check)
+			#bot.commands.privmsg("taiya","yt {} {}".format(artist,track),True)
+			#then Expect a reply from taiya, and say it back to the channel
+			#else: #taiya not on server
+			#bot.commands.privmsg(message.replyto,"taiya's not around to look it up for me!",True)
+			#bot.commands.privmsg(message,replyto,"the track is {} by {}, though".format(track,artist))
 			bot.commands.privmsg(message.replyto,"yt {} {}".format(artist,track),True)
 		elif sc:
+			#if bot.find_on_server("taiya")
+			#bot.commands.privmsg("taiya","g soundcloud {} {}".format(artist,track),True)
+			#else:
+			#bot.commands.privmsg(message.replyto,"taiya's not around to look it up for me!",True)
+			#bot.commands.privmsg(message,replyto,"the track is {} by {}, though".format(track,artist))
 			bot.commands.privmsg(message.replyto,"g soundcloud {} {}".format(artist,track),True)
 		else:
 			bot.commands.privmsg(message.replyto,"now playing: {} - {}".format(artist,track),True)

@@ -78,3 +78,6 @@ class IRCQueuedCommands:
 
 	def dcc_offer(self,target,filename,filesize,my_ip_int,port):
 		self.privmsg(target,"\x01DCC SEND {0} {1} {2} {3}\x01".format(filename,my_ip_int,port,filesize))
+
+	def whois(self,nick):
+		self.send("WHOIS",nick)
