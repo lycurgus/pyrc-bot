@@ -83,7 +83,7 @@ def nowplaying_fn(bot,message,regex_matches=None):
 				bot.commands.privmsg("taiya","yt {} {}".format(artist,track),True)
 			else:
 				bot.commands.privmsg(message.replyto,"taiya's not around to look it up for me!",True)
-				bot.commands.privmsg(message,replyto,"the track is {} by {}, though".format(track,artist))
+				bot.commands.privmsg(message.replyto,"the track is {} by {}, though".format(track,artist))
 			#bot.commands.privmsg(message.replyto,"g soundcloud {} {}".format(artist,track),True)
 		else:
 			bot.commands.privmsg(message.replyto,"now playing: {} - {}".format(artist,track),True)
