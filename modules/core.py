@@ -221,6 +221,7 @@ def handle_nameslist(bot,line,regex_matches=None):
 
 @module.line
 @module.type("401") #ERR_NOSUCHNICK
+def read_whoiserror(bot,line,regex_matches=None):
 	user = line.parameters[0]
 	status = NickStatus(False)
 	bot.seen_users[user] = status
