@@ -5,6 +5,7 @@ sys.path.insert(0,parentdir)
 
 import module
 import util
+import re
 
 @module.type("PRIVMSG")
 @module.regex(r"!np(?: (yt|sc))?")
