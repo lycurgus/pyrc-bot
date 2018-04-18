@@ -254,7 +254,7 @@ def chance(value=0):
 	return (random.random() < value)
 
 def find_on_server(bot,nick):
-	bot.whois(nick) #issue a WHOIS request
+	bot.commands.whois(nick) #issue a WHOIS request
 	sleep(5) #wait a bit to let a response come in - can we yield or similar and get awoken when one comes..?
 	if nick in bot.seen_users.keys():
 		return bot.seen_users[nick].active
