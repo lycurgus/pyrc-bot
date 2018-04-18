@@ -28,8 +28,7 @@ def get_t(offset,waketime,bedtime):
 
 def initial_set(bot):
 	print('setting initial sleep state!')
-	s = util.chance(get_t(bot.gmtoffset,bot.waketime,bot.bedtime))
-	bot.awake = s
+	s = not util.chance(get_t(bot.gmtoffset,bot.waketime,bot.bedtime))
 	bot.setcustom('asleep',s)
 
 def unload(bot):
@@ -40,13 +39,12 @@ def check_awake(bot,line,regex_matches=None):
 	if not bot.timeout('justwokeorslept').get():
 		return
 	t = get_t(bot.gmtoffset,bot.waketime,bot.bedtime)
-	old_wake = bot.getcustom('asleep')
-	old_wake = bot.awake
+	old_wake = not bot.getcustom('asleep')
 	print('checking wake state!')
-	bot.awake = util.chance(t)
-	bot.setcustom('asleep',bot.awake)
-	if bot.awake != old_wake:
-		if bot.awake:
+	new_wake = util.chance(t)
+	bot.setcustom('asleep',not new_wake)
+	if new_wake != old_wake:
+		if new_wake:
 			bot.commands.unaway(bot.nick)
 			for channel in bot.channels:
 				bot.commands.action(channel,"yawns and stretches")
@@ -61,14 +59,14 @@ def check_awake(bot,line,regex_matches=None):
 @module.timeout("nap")
 @module.command("have a nap")
 def nap(bot,message,regex_matches=None):
-	print('nap requested. awake: {}'.format(bot.awake))
-	if not bot.awake:
+	print('nap requested. asleep: {}'.format(bot.getcustom('asleep')))
+	if bot.getcustom('asleep'):
 		return None
-	bot.awake = False
+	bot.setcustom('asleep',True)
 	bot.commands.privmsg(message.replyto,"good idea :)")
 	bot.commands.action(message.replyto,"settles down for a nap")
 	def nap_wake():
-		bot.awake = True
+		bot.setcustom('asleep',False)
 		bot.commands.action(message.replyto,"wakes from her nap")
 	bot.queue_action(minutes(10),nap_wake)
 
@@ -76,13 +74,13 @@ def nap(bot,message,regex_matches=None):
 @module.timeout("nap")
 @module.command("wake up")
 def short_wake(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom('asleep'):
 		return None
-	bot.awake = True
+	bot.setcustom('asleep',False)
 	bot.commands.action(message.replyto,"stirs and wakes")
 	bot.commands.privmsg(message.replyto,"what's up? i was sleeping...")
 	def back_to_bed():
-		bot.awake = False
+		bot.setcustom('asleep',True)
 		bot.commands.action(message.replyto,"goes back to bed")
 	bot.queue_action(minutes(10),back_to_bed)
 
@@ -92,20 +90,20 @@ def short_wake(bot,message,regex_matches=None):
 def get_poked(bot,message,regex_matches=None):
 	if not regex_matches.group(1).lower() in util.lower(bot.names):
 		return
-	if bot.awake:
-		print("poked while awake")
-	else:
+	if bot.getcustom('asleep'):
 		print("poked while asleep")
+	else:
+		print("poked while awake")
 	check_awake(bot,message,regex_matches)
 
 @module.direct
 @module.regex(r"are you awake?")
 def are_you_awake(bot,message,regex_matches=None):
-	if bot.awake:
+	if not bot.getcustom('asleep'):
 		bot.commands.privmsg(message.replyto,"yep :)")
 	elif util.chance(0.5):
 		bot.commands.action(message.replyto,"snores")
-	print("{} ({})".format(str(bot.awake),bot.get_t(bot.gmtoffset)))
+	print("{} ({})".format(str(not bot.getcustom('asleep')),get_t(bot.gmtoffset,bot.waketime,bot.bedtime)))
 
 sleep = module.Module("sleep")
 sleep.add_function(nap)
