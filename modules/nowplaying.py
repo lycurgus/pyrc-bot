@@ -7,6 +7,7 @@ import module
 import util
 import re
 from datetime import timedelta
+import youtube
 
 @module.type("PRIVMSG")
 @module.regex(r"!np(?: (yt|sc))?")
@@ -53,23 +54,7 @@ def nowplaying_fn(bot,message,regex_matches=None):
 		artist = entry.attrib['artist']
 		track = entry.attrib['title']
 		if yt:
-			#if util.find_on_server(bot,"taiya"):
-			if True:
-				c = {
-						"nick": "taiya",
-						"type": "PRIVMSG"
-					}
-				a = [bot.commands.privmsg]
-				p = [[message.replyto,[re.compile(r"(.*)"),1],True]]
-				e = timedelta(seconds=15)
-				ea = [bot.commands.privmsg]
-				ep = [[message.replyto,"taiya didn't help me look up the link :("]]
-				bot.expectations.append(util.Expectation(c,a,p,e,ea,ep))
-				bot.commands.privmsg("taiya","yt {} {}".format(artist,track),True)
-			else:
-				bot.commands.privmsg(message.replyto,"taiya's not around to look it up for me!",True)
-				bot.commands.privmsg(message.replyto,"the track is {} by {}, though".format(track,artist))
-			#bot.commands.privmsg(message.replyto,"yt {} {}".format(artist,track),True)
+			bot.commands.privmsg(message.replyto,youtube.search("yt {} {}".format(artist,track)),True)
 		elif sc:
 			#if util.find_on_server(bot,"taiya"):
 			if True:
