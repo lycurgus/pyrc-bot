@@ -47,6 +47,7 @@ def bunny(bot,message,regex_matches=None):
 def lenny(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"( ͡° ͜ʖ ͡°)")
 
+@module.timeout("hello")
 @module.regex(r".*\b(?:ohai|hi|hey|hello|hiya|howdy)\b.*")
 @module.direct
 def greet(bot,message,regex_matches=None):
@@ -54,7 +55,8 @@ def greet(bot,message,regex_matches=None):
 		reply = random.choice([
 			"hi {} :)".format(message.sender),
 			"hey there!",
-			"hiya {}".format(message.sender)
+			"hiya {}".format(message.sender),
+			"hello, {}".format(message.sender)
 		])
 		bot.commands.privmsg(message.replyto,reply)
 	else:
@@ -221,6 +223,7 @@ general.add_function(carrots)
 general.add_function(bunny)
 general.add_timeout("lenny",seconds=20)
 general.add_function(lenny)
+general.add_timeout("hello",seconds=15)
 general.add_function(greet)
 general.add_function(moon)
 general.add_function(cani)
