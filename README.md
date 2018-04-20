@@ -13,4 +13,4 @@ Any modules in the `modules` directory will be loaded on startup. The file `temp
 * report module load failure to owner
 * Expectations (`util.py`) should be awaitable somehow
 * `nowplaying` module's WHOIS check has been disabled temporarily
-* should we just have youtube/google search capabilities?
+* tick/sleep resolution (i.e. how long Metronome sleeps and how much Bot.clock\_tick adds to the counter) should be configurable
