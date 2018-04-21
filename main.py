@@ -23,7 +23,7 @@ def get_servers():
 	return servers
 
 class Metronome:
-	delta = { "d": 0.25 }
+	delta = { "d": 1 }
 	base = signal("TICK-base")
 	def __init__(self):
 		self.active = True
