@@ -11,6 +11,8 @@ import re
 
 @module.timer("breaksilence")
 def break_silence(bot,message,regex_matches=None):
+	if len(list(bot.channels.keys())) == 0:
+		return
 	channel = random.choice(list(bot.channels.keys()))
 	if not bot.getcustom("asleep"):
 		actions = [
