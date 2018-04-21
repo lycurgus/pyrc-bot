@@ -10,6 +10,7 @@ import random
 from IrcQueuedCommands import IRCQueuedCommands
 from blinker import signal
 from util import random_characters, reload, hours, minutes, days, Timer, listify, chance, lower
+import math
 
 class Bot:
 	def __init__(self,servername,transport):
@@ -33,7 +34,7 @@ class Bot:
 		self.tick = 0
 		sig_tick = signal("TICK-base")
 		def handle_tick(sender,**kwargs):
-			self.clock_tick()
+			self.clock_tick(kwargs["d"])
 		self.handle_tick = handle_tick
 		print(list(sig_tick.receivers_for(sig_tick)))
 		if not self.handle_tick in sig_tick.receivers_for(sig_tick):
@@ -61,20 +62,21 @@ class Bot:
 		# new stuff ^
 		self.run()
 
-	def clock_tick(self):
-		self.tick += 1
+	def clock_tick(self,delta):
+		self.tick += delta
+		tick_num = int(round(self.tick/delta))
 		if self.debug:
-			if (self.tick % 2):
+			if (tick_num % 2):
 				print('tick!')
 			else:
 				print('tock!')
 		for timer in self.timers.values():
 			t = timer[0]
 			m = timer[1]
-			if (self.tick % t.timer == 0):
+			if (tick_num % t.timer == 0):
 				for function in self.timed_functions[t.name]:
 					function[0](self,None,None)
-		if self.tick == 1000000:
+		if tick_num == (1000000/delta):
 			print("tick reached 1000000, resetting to 0")
 			self.tick = 0
 

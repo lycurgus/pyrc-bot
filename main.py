@@ -23,6 +23,7 @@ def get_servers():
 	return servers
 
 class Metronome:
+	delta = { "d": 1 }
 	base = signal("TICK-base")
 	def __init__(self):
 		self.active = True
@@ -38,8 +39,8 @@ class Metronome:
 
 	def run(self):
 		while self.active:
-			Metronome.base.send(None)
-			sleep(1)
+			Metronome.base.send(None,**Metronome.delta)
+			sleep(Metronome.delta["d"])
 
 if __name__ == "__main__":
 	sup = Supervisor(get_event_loop())
