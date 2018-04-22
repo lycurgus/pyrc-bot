@@ -51,7 +51,7 @@ class Bot:
 		self.get_config()
 		# new stuff v
 		self.queued_actions = []
-		self.functions = {}
+		#self.functions = {}
 		self.modules = {}
 		self.timeouts = {}
 		self.timed_functions = {}
@@ -74,11 +74,6 @@ class Bot:
 		if tick_num == (1000000/delta):
 			print("tick reached 1000000, resetting to 0")
 			self.tick = 0
-
-	def register_handler(self,function,module):
-		if not module in self.functions.keys():
-			self.functions[module] = []
-		self.functions[module].append(function)
 
 	def register_timed_function(self,function,module):
 		timername = getattr(function,"timer")
@@ -104,11 +99,13 @@ class Bot:
 				self.load_module(module_name)
 
 	def reload_all_modules(self):
-		for module in self.functions.keys():
+		#for module in self.functions.keys():
+		for module in self.modules.keys():
 			self.reload_module(module)
 
 	def load_module(self,module):
-		if module in self.functions.keys():
+		#if module in self.functions.keys():
+		if module in self.modules.keys():
 			print("module {} already loaded!".format(module))
 			return
 		import importlib
@@ -140,8 +137,10 @@ class Bot:
 			self.failedmodules.remove(module)
 		if module in self.loadedmodules:
 			self.loadedmodules.remove(module)
-		if module in self.functions.keys():
-			del self.functions[module]
+		#if module in self.functions.keys():
+		#	del self.functions[module]
+		if module in self.modules.keys():
+			del self.modules[module]
 		#print(repr(self.timed_functions))
 		#unload timed functions
 		self.timed_functions = {k: [tf for tf in tfs if tf[1] is not module] for k, tfs in self.timed_functions.items()}
@@ -150,9 +149,11 @@ class Bot:
 		#unload timeouts
 		self.timeouts = {k: (to[0],to[1]) for k, to in self.timeouts.items() if to[1] is not module}
 		#ensure reloader and core are always loaded
-		if "reloader" not in self.functions.keys():
+		#if "reloader" not in self.functions.keys():
+		if "reloader" not in self.modules.keys():
 			self.load_module("reloader")
-		if "core" not in self.functions.keys():
+		#if "core" not in self.functions.keys():
+		if "core" not in self.modules.keys():
 			self.load_module("core")
 
 	def reload_module(self,module):
