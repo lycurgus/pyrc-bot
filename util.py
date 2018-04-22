@@ -119,12 +119,6 @@ def get_indefinite(word):
 	else:
 		return "a"
 
-def get_replyto(bot,line):
-	if line.parameters[0] == bot.nick:
-		return line.nick
-	else:
-		return line.parameters[0]
-
 class User:
 	def __init__(self):
 		self.last_talked = 0
