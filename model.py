@@ -9,7 +9,7 @@ import datetime
 import random
 from IrcQueuedCommands import IRCQueuedCommands
 from blinker import signal
-from util import random_characters, reload, hours, minutes, days, Timer, listify, chance, lower
+from util import random_characters, hours, minutes, days, Timer, listify, chance
 import math
 
 class Bot:
@@ -52,8 +52,7 @@ class Bot:
 		# new stuff v
 		self.queued_actions = []
 		self.functions = {}
-		self.modules = set() #TODO replace all references to self.functions with self.modules - each entry should instead be a LoadedModule (name and list of functions)
-		#TODO or should modules/functions still be a dict, but replace timeouts/timed_functions with sets??
+		self.modules = {}
 		self.timeouts = {}
 		self.timed_functions = {}
 		self.loadedmodules = []
@@ -70,12 +69,8 @@ class Bot:
 				print('tick!')
 			else:
 				print('tock!')
-		for timer in self.timers.values():
-			t = timer[0]
-			m = timer[1]
-			if (tick_num % t.timer == 0):
-				for function in self.timed_functions[t.name]:
-					function[0](self,None,None)
+		for module in self.modules.values():
+			module.check_timers(self,tick_num,delta)
 		if tick_num == (1000000/delta):
 			print("tick reached 1000000, resetting to 0")
 			self.tick = 0
@@ -94,8 +89,6 @@ class Bot:
 	def register_timer(self,timer,module):
 		if timer.name in self.timers.keys():
 			del self.timers[timer.name]
-#		else:
-#			self.timed_functions[timer.name] = []
 		self.timers[timer.name] = (timer,module)
 
 	def register_timeout(self,timeout,module):
@@ -119,7 +112,6 @@ class Bot:
 			print("module {} already loaded!".format(module))
 			return
 		import importlib
-		#print("loading module {}".format(module))
 		try:
 			m = importlib.import_module("modules.{}".format(module))
 		except:
@@ -133,6 +125,7 @@ class Bot:
 			print('loading {}'.format(module))
 			mc = getattr(m,module,None)
 			if mc:
+				self.modules[module] = mc
 				mc.initialise(self)
 				if module in self.failedmodules:
 					self.failedmodules.remove(module)
@@ -167,150 +160,15 @@ class Bot:
 		self.unload_module(module)
 		self.load_module(module)
 
-	def react_to_line2(self,line,message=None):
+	def react_to_line(self,line,message=None):
 		self.check_expectations(line)
-		for module in self.modules[:]:
+		for module in self.modules.values():
 			functions = module.check_triggers(message,self)
 			for fn in functions:
-				if hasattr(fn,"line"):
+				if hasattr(fn[0],"line"):
 					fn[0](self,line,fn[1])
 				else:
 					fn[0](self,message,fn[1])
-
-	def react_to_line(self,line,message=None):
-		self.check_expectations(line)
-		for f in list(self.functions.values())[:]:
-			for fn in f:
-				#check = self.check_trigger(fn,line)
-				check = self.check_trigger(fn,message)
-				if check[0]:
-					if hasattr(fn,"line"):
-						fn(self,line,check[1])
-					else:
-						if False:
-							print("fn")
-							print(type(fn))
-							print(repr(fn))
-							print("self")
-							print(type(self))
-							print(repr(self))
-							print("message")
-							print(type(message))
-							print(repr(message))
-							print("check")
-							print(type(check))
-							print(repr(check))
-						fn(self,message,check[1])
-
-	def check_trigger(self,function,message):
-		#print('---------trigger check for {}'.format(function.__name__))
-		possible_attributes = [
-				"timeout",
-				"type",
-				"sender",
-				"sender-not",
-				"sender-admin",
-				"sender-not-admin",
-				"channel",
-				"channel-not",
-				"user-not-present",
-				"command","mention",
-				"address",
-				"direct",
-				"regex",
-				"action",
-				"disable"
-			]
-		checks = []
-		checknames = []
-		match = None
-		if not message.message:
-			return (False,None) #TODO fix this
-		#print("function {} has attributes {}".format(function.__name__," ".join([attrib for attrib in dir(function) if not attrib.startswith("__")])))
-		check_attributes = list(set(possible_attributes).intersection(dir(function)))
-		if "direct" in check_attributes:
-			check_attributes.remove("direct")
-			check_attributes.insert(0,"direct")
-		for a in check_attributes:
-			if hasattr(function,a):
-				checknames.append(a)
-				at = getattr(function,a,None)
-				#print("function {} has attribute {}: checking for match".format(getattr(function,"__name__"),a))
-				if a == "direct":
-					checks.append(self.being_addressed(message.line))
-					if any([message.message.startswith(bn.lower()) for bn in self.names]):
-						print('original message: {}'.format(message.original))
-						message.message = re.sub(r'{}(?:[:, ])?'.format('|'.join(self.names)),'',message.original,count=1,flags=re.IGNORECASE)
-						print('altered message: {}'.format(message.message))
-				elif a == "timeout":
-					checks.append(self.timeout(at).get())
-				elif a == "type":
-					checks.append(message.command in at)
-				elif a == "sender":
-					checks.append(message.sender in at)
-				elif a == "sender-not":
-					checks.append(message.sender not in at)
-				elif a == "sender-admin":
-					checks.append(self.is_admin(message.sender))
-				elif a == "sender-not-admin":
-					checks.append(not self.is_admin(message.sender))
-				elif a == "channel":
-					checks.append(message.channel in at)
-				elif a == "channel-not":
-					checks.append(message.channel not in at)
-				elif a == "user-present":
-					if message.channel:
-						checks.append(any([u.lower() in list(map(str.lower, self.channels[message.channel].users.keys())) for u in at]))
-						#checks.append(any([u.lower() in [cu.lower() for cu in self.channels[message.channel].users.keys()] for u in at]))
-					else:
-						checks.append(False)
-				elif a == "user-not-present":
-					if message.channel:
-						checks.append(all([u.lower() not in lower(self.channels[message.channel].users.keys()) for u in at]))
-					elif message.sender:
-						if message.sender.lower() in lower(at):
-							checks.append(False)
-					else:
-						checks.append(True)
-				elif a == "mention":
-					checks.append(any([bn in message.message for bn in self.names]))
-				elif a == "address":
-					checks.append(any([any((message.message.startswith(bn),line.rest.endswith(bn))) for bn in self.names]))
-				elif a == "action":
-					action = re.match(r"^\x01(.*)\x01$",message.original)
-					if action:
-						#print("action: {}".format(action.group(1).upper().startswith("ACTION")))
-						checks.append(action.group(1).upper().startswith("ACTION"))
-						message.original = re.sub(r'ACTION ','',action.group(1),count=1)
-					else:
-						#print("not action")
-						checks.append(False)
-				elif a == "regex":
-					#match = at.match(message.message)
-					match = at.match(message.original)
-					if match:
-						print('regex match for message {}'.format(message.message))
-						print('matched against original {}'.format(message.original))
-					checks.append(True if match else False)
-				elif a == "command":
-					c_r = at[1] if at[1] else 0
-					c_o = at[2] if at[2] else 0
-					cn = '|'.join(at[0]) if isinstance(at[0],list) else at[0]
-					c = r"(?:{})\ ?(?:.*\ ?){{{},{}}}".format(cn,str(c_r),str(c_r+c_o))
-					command_pattern = re.compile(c,flags=re.IGNORECASE)
-					match = command_pattern.match(message.message)
-					checks.append(True if match else False)
-				elif a == "disable":
-					checks.append(False)
-		#print("there were {} checks and {} of them were True".format(len(checks),len([c for c in checks if c == True])))
-		if function.__name__ == "gift_react":
-			print("function {} results:".format(function.__name__))
-			print(" ".join(list(map(str,checks))))
-			print(" ".join(list(map(str,checknames))))
-		if getattr(function,"any",False):
-			return (any(checks),match)
-		else:
-			return (all(checks),match)
 
 	def is_admin(self,nick):
 		r = False
@@ -352,11 +210,6 @@ class Bot:
 				action[1]()
 				self.queued_actions[i][0] = False
 		self.queued_actions[:] = [a for a in self.queued_actions if a]
-
-	def check_timers(self): #this should be basically the same as clock_tick
-		for t in self.timers.items():
-			if self.tick:
-				pass
 
 	def get_config(self):
 		#self.db = None

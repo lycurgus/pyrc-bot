@@ -25,7 +25,7 @@ class Timer:
 		self.name = name
 
 class Module:
-	possible_attributes = [
+	triggers = [
 			"timeout",
 			"type",
 			"sender",
@@ -69,8 +69,6 @@ class Module:
 		self.timeouts.append(t)
 
 	def initialise(self,bot):
-		for function in self.functions:
-			bot.register_handler(function,self.name)
 		for tfunction in self.timed_functions:
 			bot.register_timed_function(tfunction,self.name)
 		for timer in self.timers:
@@ -83,7 +81,6 @@ class Module:
 	def check_triggers(self,message,bot):
 		matches = []
 		for function in self.functions:
-			#print('---------trigger check for {}'.format(function.__name__))
 			checks = []
 			checknames = []
 			match = None
@@ -98,7 +95,6 @@ class Module:
 				if hasattr(function,a):
 					checknames.append(a)
 					at = getattr(function,a,None)
-					#print("function {} has attribute {}: checking for match".format(getattr(function,"__name__"),a))
 					if a == "direct":
 						checks.append(bot.being_addressed(message.line))
 						if any([message.message.startswith(bn.lower()) for bn in bot.names]):
@@ -128,9 +124,9 @@ class Module:
 							checks.append(False)
 					elif a == "user-not-present":
 						if message.channel:
-							checks.append(all([u.lower() not in lower(bot.channels[message.channel].users.keys()) for u in at]))
+							checks.append(all([u.lower() not in util.lower(bot.channels[message.channel].users.keys()) for u in at]))
 						elif message.sender:
-							if message.sender.lower() in lower(at):
+							if message.sender.lower() in util.lower(at):
 								checks.append(False)
 						else:
 							checks.append(True)
@@ -139,20 +135,16 @@ class Module:
 					elif a == "address":
 						checks.append(any([any((message.message.startswith(bn),line.rest.endswith(bn))) for bn in bot.names]))
 					elif a == "action":
-						action = re.match(r"^\x01(.*)\x01$",message.original)
+						#print("action original: {}".format(repr(message.original)))
+						#action = re.match(r"^\x01(.*)\x01$",message.original)
+						action = message.is_ctcp and message.original.upper().startswith("ACTION")
 						if action:
-							#print("action: {}".format(action.group(1).upper().startswith("ACTION")))
-							checks.append(action.group(1).upper().startswith("ACTION"))
-							message.original = re.sub(r'ACTION ','',action.group(1),count=1)
+							checks.append(True)
+							message.message = re.sub(r'^ACTION ','',message.original,count=1)
 						else:
-							#print("not action")
 							checks.append(False)
 					elif a == "regex":
-						#match = at.match(message.message)
-						match = at.match(message.original)
-						if match:
-							print('regex match for message {}'.format(message.message))
-							print('matched against original {}'.format(message.original))
+						match = at.match(message.message)
 						checks.append(True if match else False)
 					elif a == "command":
 						c_r = at[1] if at[1] else 0
@@ -164,18 +156,16 @@ class Module:
 						checks.append(True if match else False)
 					elif a == "disable":
 						checks.append(False)
-			#print("there were {} checks and {} of them were True".format(len(checks),len([c for c in checks if c == True])))
-			if function.__name__ == "gift_react":
-				print("function {} results:".format(function.__name__))
-				print(" ".join(list(map(str,checks))))
-				print(" ".join(list(map(str,checknames))))
-			if getattr(function,"any",False):
-				if any(checks):
-					matches.append((function,match))
-			else:
-				if all(checks):
-					matches.append((function,match))
-			return matches
+			if all(checks):
+				matches.append((function,match))
+		return matches
+
+	def check_timers(self,bot,tick_num,delta):
+		for timer in self.timers:
+			if (tick_num % int(round(timer.timer/delta)) == 0):
+				for function in self.timed_functions:
+					if getattr(function,"timer",None) == timer.name:
+						function(bot,None,None)
 
 def ModuleException(Exception): pass
 
@@ -205,24 +195,6 @@ def type(types):
 		setattr(wrapper,"type",util.listify(types))
 		return wrapper
 	return type_decorator
-
-def any(function):
-	@wraps(function)
-	def wrapper(*args,**kwargs):
-		return function(*args,**kwargs)
-	if hasattr(function,"all"):
-		raise ModuleException("can't add @any to a function that already has @all")
-	setattr(wrapper,"any",True)
-	return wrapper
-
-def all(function):
-	@wraps(function)
-	def wrapper(*args,**kwargs):
-		return function(*args,**kwargs)
-	if hasattr(function,"any"):
-		raise ModuleException("can't add @all to a function that already has @any")
-	setattr(wrapper,"all",True)
-	return wrapper
 
 def line(function):
 	@wraps(function)
