@@ -140,11 +140,11 @@ def _dcc_get_socket_for(filename,port):
 def dcc(bot,message,regex_matches=None):
 	print('got dcc request')
 	bot.commands.privmsg(message.replyto,"ok, sending you a DCC, {}".format(message.sender))
-	(filename,filesize) = rnr.package_source(["py"],["modules"])
-	my_ip_int = rnr.encode_ip_addr(rnr.get_public_ip())
-	port = rnr.get_free_port()
+	(filename,filesize) = package_source(["py"],["modules"])
+	my_ip_int = encode_ip_addr(get_public_ip())
+	port = get_free_port()
 	bot.commands.dcc_offer(message.sender,filename,filesize,my_ip_int,port)
-	rnr.dcc_get_socket_for(filename,port) #starts its own thread
+	dcc_get_socket_for(filename,port) #starts its own thread
 	bot.commands.privmsg(bot.boss,"dcc requested by {}".format(message.sender))
 
 @module.command("updated")
@@ -191,5 +191,3 @@ files = module.Module("files")
 files.add_function(dcc)
 #files.add_function(updated)
 #files.add_function(filecount)
-#!/usr/bin/env python3
-
