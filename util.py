@@ -71,10 +71,6 @@ class Expectation:
 		for i,action in enumerate(self.expiry_actions):
 			action(*self.expiry_parameters[i])
 
-def reload(module):
-	import importlib
-	return importlib.reload(module)
-
 def listify(candidate):
 	if not isinstance(candidate,list):
 		candidate = [candidate]
