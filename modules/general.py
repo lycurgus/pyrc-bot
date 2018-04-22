@@ -212,6 +212,12 @@ def module_report(bot,message,regex_matches=None):
 	if len(bot.failedmodules):
 		bot.commands.privmsg('failed modules: {}'.format(' ,'.join(bot.failedmodules)))
 
+@module.regex(r"c\#")
+def c_sharp(bot,message,regex_matches=None):
+	if not bot.getcustom("asleep"):
+		if util.chance(0.3):
+			bot.commands.privmsg(message.replyto,"yay C#!")
+
 general = module.Module("general")
 general.add_function(poop)
 general.add_timeout("poop",minutes=3)
@@ -236,3 +242,4 @@ general.add_function(this_too)
 general.add_function(whats_a_login)
 general.add_function(professor_oak)
 general.add_function(module_report)
+general.add_function(c_sharp)
