@@ -4,17 +4,14 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
 import module
-from datetime import timedelta
-
+from colours import replace
 
 @module.type("PRIVMSG")
-@module.disable
+@module.regex(r"^echo (.*)")
 def echo_fn(bot,message,regex_matches=None):
-	#bot.commands.privmsg(message.sender,"{}: you said '{}'".format(message.sender,message.message))
-	if message.is_action:
-		print("{}: you did '{}'".format(message.sender,message.message))
-	else:
-		print("{}: you said '{}'".format(message.sender,message.message))
+	e = regex_matches.group(1)
+	e = replace(e)
+	bot.commands.privmsg(message.sender,e)
 
 echo = module.Module("echo")
 echo.add_function(echo_fn)

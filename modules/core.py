@@ -147,7 +147,7 @@ def connected(bot,line,regex_matches=None):
 		'bot':  bot
 		})
 	bot.commands.privmsg(bot.boss,"hi!")
-	bot.commands.privmsg(bot.boss,"m: {} // f: {}".format(len(bot.loadedmodules),len(bot.failedmodules)))
+	bot.commands.privmsg(bot.boss,"m: ${{light_green}}{}${{reset}} // f: ${{light_red}}{}${{reset}}".format(len(bot.loadedmodules),len(bot.failedmodules)))
 
 @module.line
 @module.type("002") #your host is

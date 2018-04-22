@@ -1,3 +1,5 @@
+import colours
+
 class IRCQueuedCommands:
 	def __init__(self,queue):
 		self.queue = queue
@@ -31,6 +33,7 @@ class IRCQueuedCommands:
 		self.user(nick,mode)
 
 	def privmsg(self,target,message,nowait=False):
+		message = colours.replace(message)
 		delay = 0
 		if not nowait:
 			delay = len(message)*0.1
