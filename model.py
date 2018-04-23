@@ -163,7 +163,7 @@ class Bot:
 
 	def react_to_line(self,line,message=None):
 		self.check_expectations(line)
-		for module in self.modules.values()[:]:
+		for module in list(self.modules.values())[:]:
 			functions = module.check_triggers(message,self)
 			for fn in functions:
 				if hasattr(fn[0],"line"):
