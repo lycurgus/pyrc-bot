@@ -7,8 +7,7 @@ import module
 import util
 import re
 from datetime import timedelta
-import youtube
-import google
+from search import Youtube,Google
 
 @module.type("PRIVMSG")
 @module.regex(r"!np(?: (yt|sc))?")
@@ -55,9 +54,9 @@ def nowplaying_fn(bot,message,regex_matches=None):
 		artist = entry.attrib['artist']
 		track = entry.attrib['title']
 		if yt:
-			bot.commands.privmsg(message.replyto,youtube.search("{} {}".format(artist,track)),True)
+			bot.commands.privmsg(message.replyto,Youtube.search("{} {}".format(artist,track)),True)
 		elif sc:
-			bot.commands.privmsg(message.replyto,google.search("soundcloud {} {}".format(artist,track)),True)
+			bot.commands.privmsg(message.replyto,Google.search("soundcloud {} {}".format(artist,track)),True)
 		else:
 			bot.commands.privmsg(message.replyto,"now playing: {} - {}".format(artist,track),True)
 	elif len(entries) > 1:
