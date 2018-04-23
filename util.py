@@ -158,6 +158,7 @@ class Channel:
 		self.topic = ""
 		self.users = {}
 		self.timers = {}
+		self.modes = set()
 		self.name = name
 		sig_tick = signal("TICK-base")
 		def dec_chanact(sender,**kwargs):

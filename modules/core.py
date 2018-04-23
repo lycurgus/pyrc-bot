@@ -126,13 +126,15 @@ def resp_mode(bot,line,regex_matches=None):
 				bot.modes.append(c)
 			else:
 				bot.modes = [m for m in bot.modes if m != c]
-		if "r" in bot.modes:
-			pass #TODO nickserv registration came in! rejoin any pending channels etc
+		if "r" in bot.modes: #nickserv registration came in
+			bot.ns_registered = True
+			for channel in bot.channels_awaiting_auth:
+				bot.commands.join(channel)
 	else: #channel mode
-		#TODO add to channel object?
 		channel = line.parameters[0]
 		mode = line.parameters[1]
 		args = line.parameters[2:]
+		bot.channels[channel].modes.add((mode,args)) #TODO confirm this is workable
 
 @module.line
 @module.type("001")
@@ -244,16 +246,6 @@ def ns_identify(bot,line,regex_matches=None):
 		if not bot.ns_registered and not bot.ns_ident_sent:
 			bot.commands.privmsg("nickserv","identify {}".format(bot.ns_pass))
 			bot.ns_ident_sent = True
-		#TODO and then catch the reply (different signal - a MODE?) and reattempt join(s)
-			c = {
-					'nick': 'nickserv',
-					'type': 'MODE',
-					'and' : ['whatever the mode is for registration??']
-				}
-			a = [bot.commands.multijoin]
-			p = [[bot.pending_channels]]
-			e = timedelta(minutes=10)
-			bot.expectations.append(Expectation(c,a,p,e)) #TODO fix this!
 	else:
 		bot.commands.privmsg(bot.boss,"i need a nickserv registration to join {}".format(channel))
 
