@@ -4,8 +4,10 @@ parentdir = os.path.dirname(currentdir)
 sys.path.insert(0,parentdir)
 
 import module
+# http://gitpython.readthedocs.io/en/stable/tutorial.html
 
 @module.type("PRIVMSG")
+@module.disable
 @module.regex(r"^git pull$")
 def git_pull(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"pulling! (but not really, this is a stub)")
