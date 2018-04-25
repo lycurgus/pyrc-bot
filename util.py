@@ -57,7 +57,7 @@ class Expectation:
 			else:
 				return None
 		#if we made it here, none of our set conditions failed and we weren't expired
-		print("initial parameters: {}".format(self.parameters))
+		#print("initial parameters: {}".format(self.parameters))
 		for j,pset in enumerate(self.parameters):
 			for k,p in enumerate(pset):
 				if isinstance(p,list):

@@ -61,7 +61,7 @@ def debug_print_line(line):
 			"332",
 			"333",
 			"353",
-			#"366", #RPL_ENDOFNAMES
+			"366", #RPL_ENDOFNAMES
 			"372",
 			"396",
 			"422", #missing motd
