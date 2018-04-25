@@ -106,13 +106,13 @@ class Bot:
 	def load_module(self,module):
 		#if module in self.functions.keys():
 		if module in self.modules.keys():
-			print("module {} already loaded!".format(module))
+			self.commands.privmsg(self.boss,"module {} already loaded".format(module))
 			return
 		import importlib
 		try:
 			m = importlib.import_module("modules.{}".format(module))
 		except:
-			print("unable to load module {}".format(module))
+			self.commands.privmsg(self.boss,"module {} failed to load".format(module))
 			import sys, traceback
 			ex_type, ex, tb = sys.exc_info()
 			traceback.print_tb(tb)
