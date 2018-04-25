@@ -62,7 +62,6 @@ def blackjack_setup(bot):
 #@module.regex(r"(\d{1}|\A|\J|\Q|\K)\ ?(♠|♥|♦|♣)")
 def handle_game(bot,message,regex_matches=None):
 	b = bot.getcustom('blackjack')
-	print(repr(message.message))
 	no_starts = Blackjack.colour_pattern.sub("",message.message)
 	no_colours = Blackjack.colour_reset.sub("",no_starts)
 	print(repr(no_colours))
