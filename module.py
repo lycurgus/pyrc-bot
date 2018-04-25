@@ -106,9 +106,15 @@ class Module:
 					elif a == "type":
 						checks.append(message.command in at)
 					elif a == "sender":
-						checks.append(message.sender in at)
+						if message.sender:
+							checks.append(message.sender.lower() in util.lower(at))
+						else:
+							checks.append(False)
 					elif a == "sender-not":
-						checks.append(message.sender not in at)
+						if message.sender:
+							checks.append(message.sender.lower() not in at.lower())
+						else:
+							checks.append(True)
 					elif a == "sender-admin":
 						checks.append(bot.is_admin(message.sender))
 					elif a == "sender-not-admin":
@@ -119,12 +125,19 @@ class Module:
 						checks.append(message.channel not in at)
 					elif a == "user-present":
 						if message.channel:
-							checks.append(any([u.lower() in list(map(str.lower, bot.channels[message.channel].users.keys())) for u in at]))
+							checks.append(any([u.lower() in util.lower(bot.channels[message.channel].users.keys()) for u in at]))
 						else:
 							checks.append(False)
 					elif a == "user-not-present":
 						if message.channel:
-							checks.append(all([u.lower() not in util.lower(bot.channels[message.channel].users.keys()) for u in at]))
+							present = []
+							for u in at:
+								user_found = False
+								for cu in bot.channels[message.channel].users.keys():
+									if cu.lower() == u.lower():
+										user_found = True
+								present.append(user_found)
+							checks.append(not any(present))
 						elif message.sender:
 							if message.sender.lower() in util.lower(at):
 								checks.append(False)
