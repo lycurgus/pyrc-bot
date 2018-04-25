@@ -67,7 +67,7 @@ def debug_print_line(line):
 			"422", #missing motd
 			"PING",
 			"NICK",
-			"___MODE"
+			"MODE"
 		]
 	if line.command not in ignoredcommands:
 		print(line.line['raw'])

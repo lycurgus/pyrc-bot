@@ -124,8 +124,10 @@ def resp_mode(bot,line,regex_matches=None):
 		for c in line.rest[1:]:
 			if mode == "+":
 				bot.modes.append(c)
+				print("received mode {}".format(c))
 			else:
 				bot.modes = [m for m in bot.modes if m != c]
+				print("lost mode {}".format(c))
 		if "r" in bot.modes: #nickserv registration came in
 			bot.ns_registered = True
 			for channel in bot.channels_awaiting_auth:
@@ -134,6 +136,7 @@ def resp_mode(bot,line,regex_matches=None):
 		channel = line.parameters[0]
 		mode = line.parameters[1]
 		args = line.parameters[2:]
+		print("mode {} received for {}. arguments: {}".format(mode,channel,args))
 		bot.channels[channel].modes.add((mode,args)) #TODO confirm this is workable
 
 @module.line
