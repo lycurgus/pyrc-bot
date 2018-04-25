@@ -7,7 +7,6 @@ Any modules in the `modules` directory will be loaded on startup. The file `temp
 ## todo
 * colours for terminal output (https://gist.github.com/martin-ueding/4007035)
 * support deactivating modules from automatic loading
-* when channel join is denied due to nickserv registration, add the channel to a list to then join when registration comes in
 * report module load failure to owner
 * Expectations (`util.py`) should be awaitable somehow
 * `nowplaying` module's WHOIS check has been disabled temporarily
