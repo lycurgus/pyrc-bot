@@ -159,7 +159,8 @@ class Bot:
 	def reload_module(self,module):
 		print("reloading {}".format(module))
 		self.unload_module(module)
-		self.load_module(module)
+		if module not in ("core","reloader"):
+			self.load_module(module)
 
 	def react_to_line(self,line,message=None):
 		self.check_expectations(line)
