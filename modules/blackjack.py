@@ -28,7 +28,7 @@ class Blackjack:
 		return Blackjack.deal.format(amount)
 
 	def parse_hand(self,line):
-		print(repr(line))
+		#print(repr(line))
 		no_colours = Blackjack.colour_reset.sub(Blackjack.colour_pattern.sub(line))
 		print(repr(no_colours))
 		# Goatbot draws 9♠ [] for himself
