@@ -14,7 +14,6 @@ class IRCProtocol(asyncio.Protocol):
 		self.t = transport
 		self.bot = model.Bot(self.name,self.t)
 		print("created bot instance")
-		#signal("BOT-init").send(self,bot=self.bot)
 		self.bot.commands.auth(self.bot.nick)
 		print("sent bot-init")
 
@@ -28,11 +27,8 @@ class IRCProtocol(asyncio.Protocol):
 			line = IRCLine(raw.strip())
 			message = IRCMessage(line)
 			self.buff = self.buff[self.buff.index('\n')+1:]
-			#signal("LINE").send(self,line=line,bot=self.bot)
-			#self.bot.react_to_line(line)
-			self.bot.react_to_line(line,message)
-			#signal(line.command).send(self,line=line,bot=self.bot)
 			debug_print_line(line)
+			self.bot.react_to_line(line,message)
 
 	def connection_lost(self,exc):
 		if exc:
@@ -65,7 +61,7 @@ def debug_print_line(line):
 			"332",
 			"333",
 			"353",
-			"366",
+			#"366", #RPL_ENDOFNAMES
 			"372",
 			"396",
 			"422", #missing motd
