@@ -69,6 +69,12 @@ class Module:
 		self.timeouts.append(t)
 
 	def initialise(self,bot):
+		for function in self.functions:
+			if hasattr(function,"regex"):
+				r = getattr(function,"regex")
+				if "_BOTNAMES_" in r.pattern:
+					newpattern = re.sub(r"_BOTNAMES_","(?:{})".format("|".join(bot.names)))
+					setattr(function,"regex",re.compile(newpattern,r.flags))
 		for tfunction in self.timed_functions:
 			bot.register_timed_function(tfunction,self.name)
 		for timer in self.timers:
