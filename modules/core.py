@@ -5,8 +5,8 @@ sys.path.insert(0,parentdir)
 
 import module
 import re
-from datetime import datetime
-from util import Channel, NickStatus
+from datetime import datetime, timedelta
+from util import Channel, NickStatus, Expectation
 from blinker import signal
 
 #TODO define the base tick as a timed function....?
@@ -197,29 +197,50 @@ def read_chantopic(bot,line,regex_matches=None):
 def handle_nameslist(bot,line,regex_matches=None):
 	nameslist = [n.lstrip("@%+~&") for n in line.rest.split(" ")]
 	channel = line.parameters[-1]
-	if channel not in bot.channels.keys():
-		print("adding channel: {}".format(channel))
-		bot.channels[channel] = Channel(channel)
-	else:
-		print("got updated names for {}".format(channel))
-	chanusers = bot.channels[channel].users.keys()
-	for name in nameslist:
-		if not name in chanusers:
-			#bot.channels[channel].add_user(name.lstrip("@%+~&"))
-			bot.channels[channel].add_user(name)
-	for user in chanusers: #TODO dictionary size changed during iteration - needs a clone??
+	flagname = "names_{}".format(channel)
+	customname = "seen_users_{}".format(channel)
+	if bot.flags(flagname) == False: #this is the first RPL_NAMREPLY
+		bot.setcustom(customname,nameslist)
+		if channel not in bot.channels.keys():
+			print("adding channel: {}".format(channel))
+			bot.channels[channel] = Channel(channel)
+		else:
+			print("got updated names for {}".format(channel))
+			chanusers = list(bot.channels[channel].users.keys())
+			for name in nameslist:
+				if not name in chanusers:
+					bot.channels[channel].add_user(name)
+		bot.flags(flagname,True)
+	else: #this is a subsequent RPL_NAMREPLY
+		chanusers = list(bot.channels[channel].users.keys())
+		existing_seen = bot.getcustom(customname)
+		bot.setcustom(customname,nameslist+existing_seen)
+		for name in nameslist:
+			if not name in chanusers:
+				bot.channels[channel].add_user(name)
+	c = { 'type': '366' }
+	a = []
+	p = [[]]
+	e = timedelta(minutes=5)
+	ea = [bot.flags,bot.removecustom]
+	ep = [[flagname,False],[customname]]
+	bot.expectations.append(Expectation(c,a,p,e,ea,ep))
+
+@module.line
+@module.type("366") #end of names list
+def handle_endofnameslist(bot,line,regex_matches=None):
+	channel = line.parameters[-1]
+	flagname = "names_{}".format(channel)
+	customname = "seen_users_{}".format(channel)
+	bot.flags(flagname,False)
+	nameslist = bot.getcustom(customname)
+	chanusers = list(bot.channels[channel].users.keys())
+	for user in chanusers:
 		if user not in nameslist:
 			bot.channels[channel].remove_user(name)
-	before = len(chanusers)
-	after = len(nameslist)
-	if before != after:
-		print("{0} had {1} users, now has {2} ({3:+d})".format(channel,before,after,after-before))
-		if before > after:
-			print("channel users: {}".format(", ".join(chanusers)))
-			print("listed users: {}".format(", ".join(nameslist)))
-			print("{} left unnoticed".format(", ".join([d for d in chanusers if d.lower() not in [nl.lower() for nl in nameslist]])))
-		else:
-			print("{} joined unnoticed".format(", ".join([s for s in nameslist if s.lower() not in [cu.lower() for cu in chanusers]])))
+	bot.removecustom(customname)
+	print("got RPL_ENDOFNAMES for {}".format(channel))
+
 
 @module.line
 @module.type("401") #ERR_NOSUCHNICK
