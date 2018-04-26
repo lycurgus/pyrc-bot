@@ -244,12 +244,6 @@ class Bot:
 		#	self.clockintervals[cv['name']] = TickInterval((days(cv['days'])+hours(cv['hours'])+minutes(cv['minutes'])+cv['seconds']),bool(cv['enabled']))
 
 	def timer(self,name):
-		return self.timer_new(name) #TODO confirm this swap didn't break anything
-		if not (name in self.timers.keys()):
-			self.timers[name] = Timer()
-		return self.timers[name]
-
-	def timer_new(self,name):
 		if not (name in self.timers.keys()):
 			print("warning! tried to get non-existent timer '{}'".format(name))
 			n = type("nulltimer",(object,),{})()
