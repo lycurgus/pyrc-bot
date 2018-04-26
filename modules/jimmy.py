@@ -35,9 +35,7 @@ def backtowork(bot,message,regex_matches=None):
 @module.user_not_present(jimmy_nicks)
 @module.type("PRIVMSG")
 @module.regex(r"^!time (.*)$")
-#@module.command("!time",1)
 def timecheck(bot,message,regex_matches=None):
-	#target = message.line.rest.split(" ",1)[1].lower() #TODO get target from command regex
 	target = regex_matches.group(1)
 	if target.lower() == bot.nick.lower():
 		bot.commands.privmsg(message.replyto,"time to get a watch! hahahaha")
