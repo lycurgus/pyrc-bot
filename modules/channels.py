@@ -47,9 +47,30 @@ def bot_quit(bot,message,regex_matches=None):
 	signal("SUPER").send(None,act="set_auto",params={
 			'name': bot.servername,
 			'auto': False
-			})
+		})
 	bot.quit = True
 	bot.commands.quit(quitmessage)
+
+@module.regex(r'^restart(?: :(.*))?$')
+@module.admin
+@module.type("PRIVMSG")
+def bot_restart(bot,message,regex_matches=None):
+	if regex_matches:
+		quitmessage = regex_matches.group(1)
+	if not quitmessage:
+		quitmessage = ""
+	if len(quitmessage) == 0:
+		message = "restarting!"
+	if not bot.getcustom('asleep'):
+		bot.commands.privmsg(replyto,"back soon!")
+	else:
+		words = ["a jumpstart","a pie chart","Descartes","a boxcart","street art"]
+		bot.commands.action(replyto,"mumbles something about {}".format(random.choice(words)))
+	signal("SUPER").send(None,act="set_auto",params={
+			'name': bot.servername,
+			'auto': True
+		})
+	bot.commands.quit(message)
 
 @module.timer("channelcheck")
 def check_channel_members(bot,message,regex_matches=None):
