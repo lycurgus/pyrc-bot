@@ -1,7 +1,6 @@
-import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir)
+import sys
+if not ".." in sys.path:
+	sys.path.insert(0,"..")
 
 import module
 import util
@@ -10,7 +9,7 @@ import random
 @module.regex(r"^(?:thanks|thank you|thx),? ([^\b]+?)\b.*")
 @module.type("PRIVMSG")
 def youre_welcome(bot,message,regex_matches=None):
-	if not regex_matches.group(1).lower() in list(map(str.lower,bot.names)):
+	if not regex_matches.group(1).lower() in util.lower(bot.names):
 		#print('person being thanked was: {}'.format(regex_matches.group(1)))
 		return
 	if not bot.getcustom("asleep"):

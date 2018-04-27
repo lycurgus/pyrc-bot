@@ -1,16 +1,14 @@
-import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir)
+import sys
+if not ".." in sys.path:
+	sys.path.insert(0,"..")
 
 import module
-from random import choice
+import random
 
 @module.type("PRIVMSG")
-@module.command(["!coin","!coinflip"])
-def coinflip_fn(bot,line,regex_matches=None):
-	replyto = line.replyto
-	bot.commands.privmsg(replyto,choice(("heads!","tails!")))
+@module.regex(r"^\!coin(?:flip)?")
+def coinflip_fn(bot,message,regex_matches=None):
+	bot.commands.privmsg(message.replyto,random.choice(("heads!","tails!")))
 
 coinflip = module.Module("coinflip")
 coinflip.add_function(coinflip_fn)

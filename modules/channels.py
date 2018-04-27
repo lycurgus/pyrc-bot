@@ -1,7 +1,6 @@
-import os,sys,inspect
-currentdir = os.path.dirname(os.path.abspath(inspect.getfile(inspect.currentframe())))
-parentdir = os.path.dirname(currentdir)
-sys.path.insert(0,parentdir)
+import sys
+if not ".." in sys.path:
+	sys.path.insert(0,"..")
 
 import module
 import random
@@ -35,8 +34,6 @@ def bot_quit(bot,message,regex_matches=None):
 		quitmessage = regex_matches.group(1)
 	if not quitmessage:
 		quitmessage = ""
-	#if ":" in message.message:
-	#	quitmessage = line.rest.split(":",1)[1].strip()
 	if len(quitmessage) == 0:
 		quitmessage = "boss told me to!"
 	if not bot.getcustom("asleep"):
