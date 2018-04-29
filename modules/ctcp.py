@@ -49,7 +49,7 @@ def ctcp_source():
 @module.regex(r"([\S]*)")
 def resp_ctcp(bot,message,regex_matches=None):
 	ctcp_type = regex_matches.group(1)
-	if ctcp_type == "ACTION":
+	if message.is_action:
 		return
 	reply = get_ctcp(ctcp_type)
 	bot.commands.ctcp_reply(message.sender,ctcp_type,reply)
