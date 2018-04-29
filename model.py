@@ -2,7 +2,6 @@ import time
 import os
 import sys
 import sqlite3
-import re
 import queue
 import threading
 import datetime
@@ -259,8 +258,6 @@ class Bot:
 		text = line.rest
 		direct = line.parameters[0] == self.nick
 		match = any([n.lower() in line.rest.lower() for n in self.names])
-		#self.mention_pattern = re.compile(r'((?:.*\b|^){0}(?:\b.*|$))'.format('|'.join(self.names)))
-		#match = self.mention_pattern.match(text)
 		if match or direct:
 			return True
 		return False
@@ -333,8 +330,3 @@ class Bot:
 				self.expectations.append(expectation)
 			elif e is False:
 				expectation.unwind()
-
-class TickInterval:
-	def __init__(self,interval,enabled):
-		self.interval = interval
-		self.enabled = enabled
