@@ -9,7 +9,7 @@ class Timeout:
 		if self.timeout == 0:
 			raise ValueError("Timeout '{}' is zero!".format(name))
 		self.name = name
-		self.mark = datetime.datetime.fromtimestamp(1)
+		self.mark = datetime.datetime.utcnow()
 
 	def get(self):
 		expired = ((datetime.datetime.utcnow() - self.mark) > datetime.timedelta(seconds=self.timeout))
@@ -40,6 +40,7 @@ class Module:
 			"direct",
 			"regex",
 			"action",
+			"ctcp",
 			"disable"
 		]
 	def __init__(self,name):
@@ -118,7 +119,7 @@ class Module:
 							checks.append(False)
 					elif a == "sender-not":
 						if message.sender:
-							checks.append(message.sender.lower() not in at.lower())
+							checks.append(message.sender.lower() not in util.lower(at))
 						else:
 							checks.append(True)
 					elif a == "sender-admin":
@@ -162,6 +163,8 @@ class Module:
 							message.message = re.sub(r'^ACTION ','',message.original,count=1)
 						else:
 							checks.append(False)
+					elif a == "ctcp":
+						checks.append(True if message.is_ctcp else False)
 					elif a == "regex":
 						match = at.match(message.message)
 						checks.append(True if match else False)
