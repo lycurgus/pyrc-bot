@@ -217,6 +217,10 @@ def c_sharp(bot,message,regex_matches=None):
 		if util.chance(0.3):
 			bot.commands.privmsg(message.replyto,"yay C#!")
 
+@module.regex(r"\*snart\*")
+def snart(bot,message,regex_matches=None):
+	bot.commands.privmsg(message.replyto,"*snart*")
+
 general = module.Module("general")
 general.add_function(poop)
 general.add_timeout("poop",minutes=3)
@@ -242,3 +246,4 @@ general.add_function(whats_a_login)
 general.add_function(professor_oak)
 general.add_function(module_report)
 general.add_function(c_sharp)
+general.add_function(snart)
