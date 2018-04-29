@@ -238,10 +238,6 @@ class Bot:
 		for pn in p:#.items():
 			self.petnames.append(pn['name'])
 		self.names = [self.nick] + self.petnames
-		#ci = c.execute('SELECT ti.name AS name,ti.days AS days,ti.hours AS hours,ti.minutes AS minutes,ti.seconds AS seconds,ti.enabled AS enabled FROM tickIntervals ti INNER JOIN tickIntervalMappings tim ON ti.id = tim.intervalId WHERE tim.identityId = (?)',[r['id']]).fetchall()
-		#self.clockintervals = {}
-		#for cv in ci:
-		#	self.clockintervals[cv['name']] = TickInterval((days(cv['days'])+hours(cv['hours'])+minutes(cv['minutes'])+cv['seconds']),bool(cv['enabled']))
 
 	def timer(self,name):
 		if not (name in self.timers.keys()):
