@@ -57,17 +57,17 @@ def bot_restart(bot,message,regex_matches=None):
 	if not quitmessage:
 		quitmessage = ""
 	if len(quitmessage) == 0:
-		message = "restarting!"
+		quitmessage = "restarting!"
 	if not bot.getcustom('asleep'):
-		bot.commands.privmsg(replyto,"back soon!")
+		bot.commands.privmsg(message.replyto,"back soon!")
 	else:
 		words = ["a jumpstart","a pie chart","Descartes","a boxcart","street art"]
-		bot.commands.action(replyto,"mumbles something about {}".format(random.choice(words)))
+		bot.commands.action(message.replyto,"mumbles something about {}".format(random.choice(words)))
 	signal("SUPER").send(None,act="set_auto",params={
 			'name': bot.servername,
 			'auto': True
 		})
-	bot.commands.quit(message)
+	bot.commands.quit(quitmessage)
 
 @module.timer("channelcheck")
 def check_channel_members(bot,message,regex_matches=None):
@@ -167,6 +167,7 @@ channels = module.Module("channels")
 channels.add_function(bot_join)
 channels.add_function(bot_part)
 channels.add_function(bot_quit)
+channels.add_function(bot_restart)
 channels.add_function(check_channel_members)
 #channels.add_function(bot_connect)
 #channels.add_function(bot_disconnect)
