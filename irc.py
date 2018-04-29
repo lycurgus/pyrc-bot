@@ -49,7 +49,7 @@ def debug_print_line(line):
 			"__001", #welcome
 			"002", #your host
 			"003", #server creation
-			"004", #???
+			"004", #your info
 			"005", #supported commands
 			"251", #user count
 			"252", #operator count
@@ -58,12 +58,12 @@ def debug_print_line(line):
 			"301", #user is away
 			"305", #marked as back
 			"306", #marked as away
-			"332",
-			"333",
-			"353",
+			"332", #channel topic
+			"333", #topic who/time
+			"353", #RPL_NAMREPLY
 			"366", #RPL_ENDOFNAMES
-			"372",
-			"396",
+			"372", #motd
+			"396", #your host hidden successfully
 			"422", #missing motd
 			"PING",
 			"NICK",
