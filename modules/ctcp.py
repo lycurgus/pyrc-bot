@@ -40,7 +40,8 @@ def ctcp_whos_a_good_boy():
 def ctcp_source():
 	responses = [
 			"If you want to see my source code you'll have to buy me a drink first ;)",
-			"just send me 'dcc' in PM, and i'll send you the files :)"
+			"just send me 'dcc' in PM, and i'll send you the files :)",
+			"take a look at https://github.com/lycurgus/pyrc-bot"
 		]
 	return random.choice(responses)
 
