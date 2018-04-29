@@ -29,7 +29,7 @@ def ctcp_time():
 	return "time to get a watch! just kidding - it's {}".format(time.strftime("%c"))
 
 def ctcp_version():
-	return "bot:v0.4:linux x86_64"
+	return "bot:v0.5:linux x86_64"
 
 def ctcp_userinfo():
 	return "I'm a bot, beep boop."
@@ -44,15 +44,14 @@ def ctcp_source():
 		]
 	return random.choice(responses)
 
-@module.line
-@module.type("NOTICE")
-@module.regex(r"^\x01([^\ ]*)\x01$")
-def resp_ctcp(bot,line,regex_matches=None):
+@module.ctcp
+@module.regex(r"([\S]*)")
+def resp_ctcp(bot,message,regex_matches=None):
 	ctcp_type = regex_matches.group(1)
 	if ctcp_type == "ACTION":
 		return
 	reply = get_ctcp(ctcp_type)
-	bot.commands.ctcp_reply(line.nick,ctcp_type,reply)
+	bot.commands.ctcp_reply(message.sender,ctcp_type,reply)
 
 ctcp = module.Module("ctcp")
 ctcp.add_function(resp_ctcp)
