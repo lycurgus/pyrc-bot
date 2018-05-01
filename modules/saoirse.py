@@ -35,7 +35,7 @@ def curse_windows(bot,message,regex_matches=None):
 			bot.commands.action(message.replyto,"shakes fist at Microsoft")
 
 @module.user_not_present("saoirse")
-@module.sender_not("taiya")
+@module.sender_not(["taiya","mechataiya","narwhaltaiya"])
 @module.type("PRIVMSG")
 @module.regex(r".*(http(?:s)?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\(\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+).*")
 def page_title(bot,message,regex_matches=None):
