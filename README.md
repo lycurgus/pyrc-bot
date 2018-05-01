@@ -7,6 +7,6 @@ Any modules in the `modules` directory will be loaded on startup. The file `temp
 ## todo
 * colours for terminal output (https://gist.github.com/martin-ueding/4007035)
 * support deactivating modules from automatic loading
-* report module load failure to owner
 * Expectations (`util.py`) should be awaitable somehow
-* `nowplaying` module's WHOIS check has been disabled temporarily
+* should probably delay reconnect if kicked due to flood
+ERROR :Closing Link: SnuggleBunny by Burstfire.UK.EU.GameSurge.net (Excess Flood)
