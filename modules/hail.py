@@ -4,7 +4,7 @@ if not ".." in sys.path:
 
 import module
 
-@module.command(["all hail! /o/","all hail"])
+@module.regex(r"all hail(?:! )?(?:/o/)?")
 @module.timeout("hail")
 def all_hail(bot,message,regex_matches=None):
 	if not bot.getcustom("asleep"):
