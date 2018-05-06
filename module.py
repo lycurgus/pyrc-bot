@@ -13,6 +13,9 @@ def check_function(function,message,bot):
 	if "direct" in check_attributes:
 		check_attributes.remove("direct")
 		check_attributes.insert(0,"direct")
+	if "disable" in check_attributes:
+		check_attributes.remove("disable")
+		check_attributes.insert(0,"disable")
 	for a in check_attributes:
 		if hasattr(function,a):
 			at = getattr(function,a,None)
@@ -48,20 +51,10 @@ def check_function(function,message,bot):
 				if not message.channel: return (False,None)
 				if not any([u.lower() in util.lower(bot.channels[message.channel].users.keys()) for u in at]): return (False,None)
 			elif a == "user-not-present":
+				if message.sender:
+					if message.sender.lower() in util.lower(at): return (False,None)
 				if message.channel:
-					present = []
-					for u in at:
-						user_found = False
-						for cu in bot.channels[message.channel].users.keys():
-							if cu.lower() == u.lower():
-								user_found = True
-						present.append(user_found)
-					checks.append(not any(present))
-				elif message.sender:
-					if message.sender.lower() in util.lower(at):
-						checks.append(False)
-				else:
-					checks.append(True)
+					if any([u.lower() in util.lower(bot.channels[message.channel].users.keys()) for u in at]): return (False,None)
 			elif a == "mention":
 				if not any([bn in message.message for bn in bot.names]): return (False,None)
 			elif a == "address":
@@ -75,7 +68,7 @@ def check_function(function,message,bot):
 			elif a == "regex":
 				match = at.match(message.message)
 				if not match: return (False,None)
-		matches.append((function,match))
+	return (True,match)
 
 
 
