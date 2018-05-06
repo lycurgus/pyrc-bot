@@ -19,42 +19,30 @@ class Expectation:
 		self.expiry_actions = ea#[]
 		self.expiry_parameters = ep#[[]]
 
-	def check(self,line):
+	def check(self,message):
 		if datetime.datetime.now() > self.expiry:
 			return False
 		if self.conditions.get('regex',None): #regex match
-			m = re.match(self.conditions['regex'],line.rest)
-			if m:
-				pass
-			else:
+			m = re.match(self.conditions['regex'],message.message)
+			if not m:
 				return None
 		if self.conditions.get('type',None): #message type
-			if line.command == self.conditions['type']:
-				pass
-			else:
+			if not message.command == self.conditions['type']:
 				return None
 		if self.conditions.get('or',None): #message contains any of the terms
 			ors = self.conditions['or']
-			if any([t in line.rest for t in ors]):
-				pass
-			else:
+			if not any([t in message.message for t in ors]):
 				return None
 		if self.conditions.get('and',None): #message contains all of the terms
 			ands = self.conditions['and']
-			if all([t in line.rest for t in ands]):
-				pass
-			else:
+			if not all([t in message.message for t in ands]):
 				return None
 		if self.conditions.get('not',None): #message contains none of the terms
 			nots = self.conditions['not']
-			if not any([t in line.rest for t in nots]):
-				pass
-			else:
+			if any([t in message.message for t in nots]):
 				return None
 		if self.conditions.get('nick',None): #message came from given user
-			if line.nick.lower() == self.conditions['nick'].lower():
-				pass
-			else:
+			if not message.nick.lower() == self.conditions['nick'].lower():
 				return None
 		#if we made it here, none of our set conditions failed and we weren't expired
 		#print("initial parameters: {}".format(self.parameters))

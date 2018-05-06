@@ -24,7 +24,7 @@ def check_function(function,message,bot):
 					print('original message: {}'.format(message.original))
 					message.message = re.sub(r'{}(?:[:, ])?'.format('|'.join(bot.names)),'',message.original,count=1,flags=re.IGNORECASE)
 					print('altered message: {}'.format(message.message))
-				if not bot.being_addressed(message.line): return (False,None)
+				if not bot.being_addressed(message): return (False,None)
 			elif a == "disable":
 				return (False,None)
 			elif a == "timeout":
@@ -58,7 +58,7 @@ def check_function(function,message,bot):
 			elif a == "mention":
 				if not any([bn in message.message for bn in bot.names]): return (False,None)
 			elif a == "address":
-				if not any([any((message.message.startswith(bn),line.rest.endswith(bn))) for bn in bot.names])): return (False,None)
+				if not any([any((message.message.startswith(bn),line.rest.endswith(bn))) for bn in bot.names]): return (False,None)
 			elif a == "action":
 				if not message.is_ctcp: return (False,None)
 				if not message.original.upper().startswith("ACTION"): return (False,None)
@@ -69,8 +69,6 @@ def check_function(function,message,bot):
 				match = at.match(message.message)
 				if not match: return (False,None)
 	return (True,match)
-
-
 
 
 class Timeout:
@@ -125,8 +123,6 @@ class Module:
 	def add_function(self,function):
 		if not hasattr(function,"type"):
 			setattr(function,"type",["PRIVMSG"])
-		if not hasattr(function,"line"):
-			setattr(function,"message",True)
 		if hasattr(function,"timer"):
 			self.timed_functions.append(function)
 		else:
@@ -247,9 +243,15 @@ class Module:
 			if all(checks):
 				if timeout != "":
 					if bot.timeout(timeout).get():
-						bot.timeout(timeout).set() #TODO: check functions individually so this can be kept in the body of the check??
+						bot.timeout(timeout).set()
 				matches.append((function,match))
 		return matches
+
+	def check_functions(self,message,bot):
+		for function in self.functions:
+			passed,match = check_function(function,message,bot)
+			if passed:
+				function(bot,message,match)
 
 
 
@@ -288,13 +290,6 @@ def type(types):
 		setattr(wrapper,"type",util.listify(types))
 		return wrapper
 	return type_decorator
-
-def line(function):
-	@wraps(function)
-	def wrapper(*args,**kwargs):
-		return function(*args,**kwargs)
-	setattr(wrapper,"line",True)
-	return wrapper
 
 def admin(function):
 	@wraps(function)

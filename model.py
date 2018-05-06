@@ -161,15 +161,10 @@ class Bot:
 		if module not in ("core","reloader"):
 			self.load_module(module)
 
-	def react_to_line(self,line,message=None):
-		self.check_expectations(line)
+	def react_to_message(self,message):
+		self.check_expectations(message)
 		for module in list(self.modules.values())[:]:
-			functions = module.check_triggers(message,self)
-			for fn in functions:
-				if hasattr(fn[0],"line"):
-					fn[0](self,line,fn[1])
-				else:
-					fn[0](self,message,fn[1])
+			module.check_functions(message,self)
 
 	def is_admin(self,nick):
 		r = False
@@ -254,10 +249,10 @@ class Bot:
 			return n
 		return self.timeouts[name][0]
 
-	def being_addressed(self,line):
-		text = line.rest
-		direct = line.parameters[0] == self.nick
-		match = any([n.lower() in line.rest.lower() for n in self.names])
+	def being_addressed(self,message):
+		text = message.message
+		direct = message.parameters[0] == self.nick
+		match = any([n.lower() in text.lower() for n in self.names])
 		if match or direct:
 			return True
 		return False
@@ -322,10 +317,10 @@ class Bot:
 				new += random.choice(["_","`","-"])
 			#TODO detect when we've exhausted the space???
 
-	def check_expectations(self,line):
+	def check_expectations(self,message):
 		expectations, self.expectations = self.expectations, []
 		for expectation in expectations:
-			e = expectation.check(line)
+			e = expectation.check(message)
 			if e is None:
 				self.expectations.append(expectation)
 			elif e is False:

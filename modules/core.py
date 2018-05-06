@@ -14,68 +14,62 @@ from blinker import signal
 #idea: a module can either hardcode things or define strings to be added to the bot instance?
 #idea: a separate file for modules' strings?
 
-@module.line
 @module.type("PRIVMSG")
-def resp_privmsg(bot,line,regex_matches=None):
-	print("{u} ({s}{sep}{c}): {l}".format(u=line.nick,s=bot.servername,sep='' if line.parameters[0].startswith('#') else ':',c=line.parameters[0],l=line.rest))
-	channel = line.parameters[0] if not line.parameters[0] == bot.nick else None
+def resp_privmsg(bot,message,regex_matches=None):
+	print("{u} ({s}{sep}{c}): {l}".format(u=message.nick,s=bot.servername,sep='' if message.parameters[0].startswith('#') else ':',c=message.parameters[0],l=message.message))
+	channel = message.channel
 	if channel:
-		if line.nick not in bot.channels[channel].users.keys():
-			bot.channels[channel].add_user(line.nick)
+		if message.nick not in bot.channels[channel].users.keys():
+			bot.channels[channel].add_user(message.nick)
 		bot.channels[channel].line_seen()
-		bot.channels[channel].users[line.nick].talked(line.rest)
-	if bot.being_addressed(line):
+		bot.channels[channel].users[message.nick].talked(message.message)
+	if bot.being_addressed(message):
 		print('being addressed')
 
-@module.line
 @module.type("QUIT")
-def handle_quitreport(bot,line,regex_matches=None):
-	print("user {} is quitting".format(line.nick))
+def handle_quitreport(bot,message,regex_matches=None):
+	print("user {} is quitting".format(message.nick))
 	for cname,channel in bot.channels.items():
-		bot.channels[cname].remove_user(line.nick)
+		bot.channels[cname].remove_user(message.nick)
 
-@module.line
 @module.type("JOIN")
-def handle_joinreport(bot,line,regex_matches=None):
-	channel = line.rest
-	joiner = line.nick
+def handle_joinreport(bot,message,regex_matches=None):
+	channel = message.message
+	joiner = message.nick
 	if channel and not (joiner == bot.nick):
 		print("{} joined {}".format(joiner,channel))
 		bot.channels[channel].add_user(joiner)
 
-@module.line
 @module.type("PART")
-def handle_partreport(bot,line,regex_matches=None):
-	channel = line.parameters[0]
+def handle_partreport(bot,message,regex_matches=None):
+	channel = message.channel
 	if not channel:
-		print(line.line['raw'])
-	reason = line.rest
-	print("user {} left {}".format(line.nick,channel))
+		print(message.raw)
+	reason = message.message
+	print("user {} left {}".format(message.nick,channel))
 	if channel in bot.channels.keys():
-		if line.nick in bot.channels[channel].users.keys():
-			del bot.channels[channel].users[line.nick]
+		if message.nick in bot.channels[channel].users.keys():
+			del bot.channels[channel].users[message.nick]
 
-@module.line
 @module.type("NICK")
-def handle_nickreport(bot,line,regex_matches=None):
-	oldnick = line.nick
-	newnick = line.rest
+def handle_nickreport(bot,message,regex_matches=None):
+	oldnick = message.nick
+	newnick = message.message
 	print("user {} changing nick to {}".format(oldnick,newnick))
 	if oldnick == bot.boss:
 		bot.boss = newnick
-	for cname,channel in bot.channels.items():
-		bot.channels[cname].rename_user(oldnick,newnick)
+	for channel in bot.channels.keys():
+		bot.channels[channel].rename_user(oldnick,newnick)
 
-@module.line
 @module.type("INVITE")
-def handle_invite(bot,line,regex_matches=None):
+def handle_invite(bot,message,regex_matches=None):
 	#:lycurgus!lycurgus@gamesurge-a402b724.gs INVITE SnuggleBunny #limittheory
-	chan = line.parameters[0]
-	if line.nick == bot.boss:
+	chan = message.channel
+	if message.nick == bot.boss:
 		bot.commands.join(chan)
 	else:
-		bot.commands.privmsg(line.nick,"hang on, i have to ask the boss :)")
-		bot.commands.privmsg(bot.boss,"{} wanted me to join {}.... is that okay?".format(line.nick,chan))
+		bot.commands.privmsg(message.nick,"hang on, i have to ask the boss :)")
+		bot.commands.privmsg(bot.boss,"{} wanted me to join {}.... is that okay?".format(message.nick,chan))
 		c = {
 				'nick': bot.boss,
 				'or': ["yes","ok","sure","fine"],
@@ -84,43 +78,38 @@ def handle_invite(bot,line,regex_matches=None):
 		a = [bot.commands.join]
 		p = [[chan]]
 		e = timedelta(minutes=10)
-		ea, ep = [bot.commands.privmsg], [[line.nick,"sorry, my boss didn't want me to join"]] #expiry actions, expiry parameters
+		ea, ep = [bot.commands.privmsg], [[message.nick,"sorry, my boss didn't want me to join"]] #expiry actions, expiry parameters
 		bot.expectations.append(Expectation(c,a,p,e,ea,ep))
 
-@module.line
 @module.type("KICK")
-def handle_kick(bot,line,regex_matches=None):
-	channel = line.parameters[0]
-	kicked = line.parameters[1]
-	reason = line.rest
+def handle_kick(bot,message,regex_matches=None):
+	channel = message.channel
+	kicked = message.parameters[1]
+	reason = message.message
 	if kicked == bot.nick:
 		bot.commands.privmsg(bot.boss,"i got kicked from {} ({})".format(channel,reason))
 	else:
 		bot.channels[channel].remove_user(kicked)
 
-@module.line
 @module.type("NOTICE")
-def resp_notice(bot,line,regex_matches=None):
-	if line.nick != "Global":
-		print("{} {} {} {}".format(line.nick,line.command,line.parameters[0],line.rest))
+def resp_notice(bot,message,regex_matches=None):
+	if message.nick != "Global":
+		print("{} {} {} {}".format(message.nick,message.command,message.parameters[0],message.message))
 
-@module.line
 @module.type("ERROR")
-def resp_err(bot,line,regex_matches=None):
-	print("{} {} {} {}".format(line.nick,line.command,line.parameters[0],line.rest))
+def resp_err(bot,message,regex_matches=None):
+	print("{} {} {} {}".format(message.nick,message.command,message.parameters[0],message.message))
 
-@module.line
 @module.type("PING")
-def resp_ping(bot,line,regex_matches=None):
+def resp_ping(bot,message,regex_matches=None):
 	print('{} -- got ping, sending pong'.format(datetime.now()))
-	bot.commands.pong(line.rest)
+	bot.commands.pong(message.message)
 
-@module.line
 @module.type("MODE")
-def resp_mode(bot,line,regex_matches=None):
-	if line.parameters[0] == bot.nick: #usermode
-		mode = line.rest[0]
-		for c in line.rest[1:]:
+def resp_mode(bot,message,regex_matches=None):
+	if message.parameters[0] == bot.nick: #usermode
+		mode = message.message[0]
+		for c in message.message[1:]:
 			if mode == "+":
 				bot.modes.append(c)
 				print("received mode {}".format(c))
@@ -132,15 +121,14 @@ def resp_mode(bot,line,regex_matches=None):
 			for channel in bot.channels_awaiting_auth:
 				bot.commands.join(channel)
 	else: #channel mode
-		channel = line.parameters[0]
-		mode = line.parameters[1]
-		args = line.parameters[2:]
+		channel = message.parameters[0]
+		mode = message.parameters[1]
+		args = message.parameters[2:]
 		print("mode {} received for {}. arguments: {}".format(mode,channel,args))
 		bot.channels[channel].modes.add((mode,args)) #TODO confirm this is workable
 
-@module.line
 @module.type("001")
-def connected(bot,line,regex_matches=None):
+def connected(bot,message,regex_matches=None):
 	bot.connected = True
 	for chan in bot.autochannels:
 		if chan in bot.ignoreautojointemp:
@@ -153,52 +141,44 @@ def connected(bot,line,regex_matches=None):
 	bot.commands.privmsg(bot.boss,"hi!")
 	bot.commands.privmsg(bot.boss,"m: ${{light_green}}{}${{reset}} // f: ${{light_red}}{}${{reset}}".format(len(bot.loadedmodules),len(bot.failedmodules)))
 
-@module.line
 @module.type("002") #your host is
-def yourhost(bot,line,regex_matches=None):
+def yourhost(bot,message,regex_matches=None):
 	pass
 
-@module.line
 @module.type("003") #server created
-def msg_003(bot,line,regex_matches=None):
+def msg_003(bot,message,regex_matches=None):
 	pass
 
-@module.line
 @module.type("005") #supported commands
-def msg_005(bot,line,regex_matches=None):
-	#print(line.parameters[1:])
-	for p in line.parameters[1:]:
+def msg_005(bot,message,regex_matches=None):
+	for p in message.parameters[1:]:
 		if "=" in p: #key-value
 			kv = p.split("=",1)
 			bot.servermodes[kv[0]] = kv[1]
 		else:
 			bot.servermodes[p] = True
 
-@module.line
 @module.type("301") #user is away
-def msg_301(bot,line,regex_matches=None):
-	print("user {} is away: {}".format(line.parameters[1],line.rest))
+def msg_301(bot,message,regex_matches=None):
+	print("user {} is away: {}".format(message.parameters[1],message.message))
 
-@module.line
 @module.type("311") #RPL_WHOISUSER
-def read_whoisuser(bot,line,regex_matches=None):
-	user = line.parameters[0]
+def read_whoisuser(bot,message,regex_matches=None):
+	user = message.parameters[0]
 	status = NickStatus(True)
 	bot.seen_users[user] = status
 
-@module.line
 @module.type("332") #channel topic
-def read_chantopic(bot,line,regex_matches=None):
-	channel = line.parameters[1]
+def read_chantopic(bot,message,regex_matches=None):
+	channel = message.parameters[1]
 	if channel not in bot.channels.keys():
 		bot.channels[channel] = Channel(channel)
-	bot.channels[channel].topic = line.rest
+	bot.channels[channel].topic = message.message
 
-@module.line
 @module.type("353") #channel names list
-def handle_nameslist(bot,line,regex_matches=None):
-	nameslist = [n.lstrip("@%+~&") for n in line.rest.split(" ")]
-	channel = line.parameters[-1]
+def handle_nameslist(bot,message,regex_matches=None):
+	nameslist = [n.lstrip("@%+~&") for n in message.message.split(" ")]
+	channel = message.parameters[-1]
 	flagname = "names_{}".format(channel)
 	customname = "seen_users_{}".format(channel)
 	if bot.flags(flagname) == False: #this is the first RPL_NAMREPLY
@@ -228,10 +208,9 @@ def handle_nameslist(bot,line,regex_matches=None):
 	ep = [[flagname,False],[customname]]
 	bot.expectations.append(Expectation(c,a,p,e,ea,ep))
 
-@module.line
 @module.type("366") #end of names list
-def handle_endofnameslist(bot,line,regex_matches=None):
-	channel = line.parameters[-1]
+def handle_endofnameslist(bot,message,regex_matches=None):
+	channel = message.parameters[-1]
 	flagname = "names_{}".format(channel)
 	customname = "seen_users_{}".format(channel)
 	bot.flags(flagname,False)
@@ -243,26 +222,21 @@ def handle_endofnameslist(bot,line,regex_matches=None):
 	bot.removecustom(customname)
 	print("got RPL_ENDOFNAMES for {}".format(channel))
 
-
-@module.line
 @module.type("401") #ERR_NOSUCHNICK
-def read_whoiserror(bot,line,regex_matches=None):
-	user = line.parameters[0]
+def read_whoiserror(bot,message,regex_matches=None):
+	user = message.parameters[0]
 	status = NickStatus(False)
 	bot.seen_users[user] = status
 
-@module.line
-@module.type("433") #nickname in use
-def nickname_in_use(bot,line,regex_matches=None):
-	#:cherryh.freenode.net 433 * SnuggleBunny :Nickname is already in use.
+@module.type("433") #nickname in use #:cherryh.freenode.net 433 * SnuggleBunny :Nickname is already in use.
+def nickname_in_use(bot,message,regex_matches=None):
 	bot.nick = bot.get_alternate_nick(bot.nick) #TODO make this a thing!
 	bot.commands.nick(bot.nick)
 	bot.commands.privmsg(bot.boss,"hey! my usual nick was in use...")
 
-@module.line
 @module.type("477") #need to be registered to join channel
-def ns_identify(bot,line,regex_matches=None):
-	channel = line.parameters[1]
+def ns_identify(bot,message,regex_matches=None):
+	channel = message.parameters[1]
 	if channel not in bot.channels_awaiting_auth:
 		bot.channels_awaiting_auth.append(channel) #for later use when authed
 	if bot.ns_pass:
