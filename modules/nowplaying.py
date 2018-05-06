@@ -53,11 +53,14 @@ def nowplaying_fn(bot,message,regex_matches=None):
 		artist = entry.attrib['artist']
 		track = entry.attrib['title']
 		if yt:
-			bot.commands.privmsg(message.replyto,Youtube.search("{} {}".format(artist,track)),True)
+			result = Youtube.search("{} {}".format(artist,track))
 		elif sc:
-			bot.commands.privmsg(message.replyto,Google.search("soundcloud {} {}".format(artist,track)),True)
+			result = Google.search("soundcloud {} {}".format(artist,track))
 		else:
-			bot.commands.privmsg(message.replyto,"now playing: {} - {}".format(artist,track),True)
+			result = "now playing: {} - {}".format(artist,track)
+		if not result:
+			result = "no results! :("
+		bot.commands.privmsg(message.replyto,result,True)
 	elif len(entries) > 1:
 		bot.commands.privmsg(message.replyto,"now playing:",True)
 		for entry in entries:
@@ -65,7 +68,10 @@ def nowplaying_fn(bot,message,regex_matches=None):
 			track = entry.attrib['title']
 			user = entry.attrib['username']
 			player = entry.attrib['playerId']
-			bot.commands.privmsg(message.replyto,"{} - {} ({}@{})".format(artist,track,user,player),True)
+			link = Youtube.search("{} {}".format(artist,track))
+			if not link:
+				link = "not found on youtube"
+			bot.commands.privmsg(message.replyto,"{} - {} ({}@{}) [ {} ]".format(artist,track,user,player,link),True)
 	else:
 		bot.commands.privmsg(message.replyto,"nothing playing right now!",True)
 
