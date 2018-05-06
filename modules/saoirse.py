@@ -53,7 +53,7 @@ def page_title(bot,message,regex_matches=None):
 	title = tree.xpath('//title')[0].text.strip()
 	bot.commands.privmsg(message.replyto,title,True)
 
-@module.command("!eyebrows")
+@module.regex(r"^\!(?:eyebrows|lenny)$")
 @module.user_not_present("saoirse")
 def lenny(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"( ͡° ͜ʖ ͡°)")
