@@ -103,6 +103,13 @@ def gift_react(bot,message,regex_matches=None):
 	elif gift.lower() == "twenty dollars":
 		if not bot.getcustom("asleep"):
 			bot.commands.privmsg(message.replyto,"aw, twenty dollars? i wanted a carrot :(")
+	elif gift.lower() == "one ring":
+		if not bot.getcustom("asleep"):
+			bot.commands.action(message.replyto,"keeps it secret")
+			bot.commands.action(message.replyto,"keeps it safe")
+			if util.chance(0.1):
+				bot.commands.privmsg(message.replyto,"....")
+				bot.commands.action(message.replyto,"eats the {}".format(gift))
 	else:
 		if not bot.getcustom("asleep"):
 			bot.commands.action(message.replyto,"eats the {}".format(gift))
