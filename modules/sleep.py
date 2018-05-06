@@ -53,7 +53,7 @@ def check_awake(bot,line,regex_matches=None):
 
 @module.admin
 @module.timeout("nap")
-@module.command("have a nap")
+@module.regex(r"^have a nap$")
 def nap(bot,message,regex_matches=None):
 	print('nap requested. asleep: {}'.format(bot.getcustom('asleep')))
 	if bot.getcustom('asleep'):
@@ -68,7 +68,7 @@ def nap(bot,message,regex_matches=None):
 
 @module.admin
 @module.timeout("nap")
-@module.command("wake up")
+@module.regex(r"^wake up$")
 def short_wake(bot,message,regex_matches=None):
 	if not bot.getcustom('asleep'):
 		return None

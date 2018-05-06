@@ -8,7 +8,7 @@ import random
 from datetime import timedelta
 
 @module.timeout("poop")
-@module.command("poop")
+@module.regex(r"^poop$")
 def poop(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"     (   )  ")
 	bot.commands.privmsg(message.replyto,"  (   ) (   ")
@@ -17,34 +17,28 @@ def poop(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"  _(_\ \)__ ")
 	bot.commands.privmsg(message.replyto," (____\___))")
 
-@module.command("beep boop")
+@module.regex(r"^beep boop$")
 @module.user_not_present("taiya")
 @module.timeout("beep")
 def beep_boop(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"boop beep")
 
-@module.command("pew")
+@module.regex(r"^pew$")
 def pew(bot,message,regex_matches=None):
 	if not bot.getcustom("asleep"):
 		if util.chance(0.01):
 			bot.commands.privmsg(message.replyto,"pew pew")
 
-@module.command("carrots")
+@module.regex(r"^carrots$")
 def carrots(bot,message,regex_matches=None):
 	if not bot.getcustom("asleep"):
 		bot.commands.privmsg(message.replyto,"CARROTS!")
 	else:
 		bot.commands.action(message.replyto,"sleepily extends a paw to receive a carrot")
 
-@module.command("bunny")
+@module.regex(r"^bunny$")
 def bunny(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"🐇")
-
-@module.timeout("lenny")
-@module.command("!lenny")
-@module.user_not_present("saoirse")
-def lenny(bot,message,regex_matches=None):
-	bot.commands.privmsg(message.replyto,"( ͡° ͜ʖ ͡°)")
 
 @module.timeout("hello")
 @module.regex(r".*\b(?:ohai|hi|hey|hello|hiya|howdy)\b.*")
@@ -230,8 +224,6 @@ general.add_function(beep)
 general.add_function(pew)
 general.add_function(carrots)
 general.add_function(bunny)
-general.add_timeout("lenny",seconds=20)
-general.add_function(lenny)
 general.add_timeout("hello",seconds=15)
 general.add_function(greet)
 general.add_function(moon)

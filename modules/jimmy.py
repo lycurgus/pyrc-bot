@@ -11,7 +11,7 @@ jimmy_nicks = ["jimmy","jimmy42","cha0zzb0t","blob","sleepybalrog","hungrybalrog
 
 @module.user_not_present(jimmy_nicks)
 @module.type("PRIVMSG")
-@module.command("!bed")
+@module.regex(r"^\!bed$")
 def gotobed(bot,message,regex_matches=None):
 	if bot.getcustom("asleep"):
 		bot.commands.action(message.replyto,"is already in bed")
@@ -22,7 +22,7 @@ def gotobed(bot,message,regex_matches=None):
 
 @module.user_not_present(jimmy_nicks)
 @module.type("PRIVMSG")
-@module.command("!work")
+@module.regex(r"^\!work$")
 def backtowork(bot,message,regex_matches=None):
 	if bot.getcustom("asleep"):
 		bot.commands.action(message.replyto,"is too sleepy to work")

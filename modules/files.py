@@ -146,7 +146,7 @@ def dcc(bot,message,regex_matches=None):
 	dcc_get_socket_for(filename,port) #starts its own thread
 	bot.commands.privmsg(bot.boss,"dcc requested by {}".format(message.sender))
 
-@module.command("updated")
+@module.regex(r"^updated$")
 @module.type("PRIVMSG")
 def updated(bot,message,regex_matches=None):
 	updated_string, updated_ago = get_source_updated_string()
@@ -177,7 +177,7 @@ def get_source_updated_string():
 			updated_ago = "not too long"
 	return updated_string, updated_ago
 
-@module.command("filecount")
+@module.regex(r"^filecount$")
 @module.type("PRIVMSG")
 def filecount(bot,message,regex_matches=None):
 	import glob

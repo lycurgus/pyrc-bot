@@ -3,19 +3,97 @@ from functools import wraps
 import re
 import datetime
 
+
+
+def check_function(function,message,bot):
+	match = None
+	if not message.message:
+		return (False,None)
+	check_attributes = list(set(Module.triggers).intersection(dir(function)))
+	if "direct" in check_attributes:
+		check_attributes.remove("direct")
+		check_attributes.insert(0,"direct")
+	for a in check_attributes:
+		if hasattr(function,a):
+			at = getattr(function,a,None)
+			if a == "direct":
+				if any([message.message.startswith(bn.lower()) for bn in bot.names]):
+					print('original message: {}'.format(message.original))
+					message.message = re.sub(r'{}(?:[:, ])?'.format('|'.join(bot.names)),'',message.original,count=1,flags=re.IGNORECASE)
+					print('altered message: {}'.format(message.message))
+				if not bot.being_addressed(message.line): return (False,None)
+			elif a == "disable":
+				return (False,None)
+			elif a == "timeout":
+				expired = bot.timeout(at).get()
+				if not expired: return (False,None)
+				bot.timeout(at).set()
+			elif a == "type":
+				if not message.command in at: return (False,None)
+			elif a == "sender":
+				if not message.sender: return (False,None)
+				if not message.sender.lower() in util.lower(at): return (False,None)
+			elif a == "sender-not":
+				if message.sender:
+					if message.sender.lower() in util.lower(at): return (False,None)
+			elif a == "sender-admin":
+				if not bot.is_admin(message.sender): return (False,None)
+			elif a == "sender-not-admin":
+				if bot.is_admin(message.sender): return (False,None)
+			elif a == "channel":
+				if not message.channel in at: return (False,None)
+			elif a == "channel-not":
+				if message.channel in at: return (False,None)
+			elif a == "user-present":
+				if not message.channel: return (False,None)
+				if not any([u.lower() in util.lower(bot.channels[message.channel].users.keys()) for u in at]): return (False,None)
+			elif a == "user-not-present":
+				if message.channel:
+					present = []
+					for u in at:
+						user_found = False
+						for cu in bot.channels[message.channel].users.keys():
+							if cu.lower() == u.lower():
+								user_found = True
+						present.append(user_found)
+					checks.append(not any(present))
+				elif message.sender:
+					if message.sender.lower() in util.lower(at):
+						checks.append(False)
+				else:
+					checks.append(True)
+			elif a == "mention":
+				if not any([bn in message.message for bn in bot.names]): return (False,None)
+			elif a == "address":
+				if not any([any((message.message.startswith(bn),line.rest.endswith(bn))) for bn in bot.names])): return (False,None)
+			elif a == "action":
+				if not message.is_ctcp: return (False,None)
+				if not message.original.upper().startswith("ACTION"): return (False,None)
+				message.message = re.sub(r'^ACTION ','',message.original,count=1)
+			elif a == "ctcp":
+				if not message.is_ctcp: return (False,None)
+			elif a == "regex":
+				match = at.match(message.message)
+				if not match: return (False,None)
+		matches.append((function,match))
+
+
+
+
 class Timeout:
 	def __init__(self,name,days=0,hours=0,minutes=0,seconds=0):
 		self.timeout = util.days(days) + util.hours(hours) + util.minutes(minutes) + seconds
 		if self.timeout == 0:
 			raise ValueError("Timeout '{}' is zero!".format(name))
 		self.name = name
-		self.mark = datetime.datetime.utcnow()
+		self.mark = datetime.datetime.fromtimestamp(1)
 
 	def get(self):
 		expired = ((datetime.datetime.utcnow() - self.mark) > datetime.timedelta(seconds=self.timeout))
-		if expired:
-			self.mark = datetime.datetime.utcnow()
 		return expired
+
+	def set(self):
+		self.mark = datetime.datetime.utcnow()
 
 class Timer:
 	def __init__(self,name,days=0,hours=0,minutes=0,seconds=0):
@@ -35,7 +113,7 @@ class Module:
 			"channel",
 			"channel-not",
 			"user-not-present",
-			"command","mention",
+			"mention",
 			"address",
 			"direct",
 			"regex",
@@ -86,6 +164,7 @@ class Module:
 			self.setup_function(bot)
 
 	def check_triggers(self,message,bot):
+		timeout = ""
 		matches = []
 		for function in self.functions:
 			checks = []
@@ -109,7 +188,9 @@ class Module:
 							message.message = re.sub(r'{}(?:[:, ])?'.format('|'.join(bot.names)),'',message.original,count=1,flags=re.IGNORECASE)
 							print('altered message: {}'.format(message.message))
 					elif a == "timeout":
-						checks.append(bot.timeout(at).get())
+						timeout = at
+						expired = bot.timeout(at).get()
+						checks.append(expired)
 					elif a == "type":
 						checks.append(message.command in at)
 					elif a == "sender":
@@ -168,19 +249,16 @@ class Module:
 					elif a == "regex":
 						match = at.match(message.message)
 						checks.append(True if match else False)
-					elif a == "command":
-						c_r = at[1] if at[1] else 0
-						c_o = at[2] if at[2] else 0
-						cn = '|'.join(at[0]) if isinstance(at[0],list) else at[0]
-						c = r"(?:{})\ ?(?:.*\ ?){{{},{}}}".format(cn,str(c_r),str(c_r+c_o))
-						command_pattern = re.compile(c,flags=re.IGNORECASE)
-						match = command_pattern.match(message.message)
-						checks.append(True if match else False)
 					elif a == "disable":
 						checks.append(False)
 			if all(checks):
+				if timeout != "":
+					if bot.timeout(timeout).get():
+						bot.timeout(timeout).set() #TODO: check functions individually so this can be kept in the body of the check??
 				matches.append((function,match))
 		return matches
+
+
 
 	def check_timers(self,bot,tick_num,delta):
 		for timer in self.timers:
@@ -224,15 +302,6 @@ def line(function):
 		return function(*args,**kwargs)
 	setattr(wrapper,"line",True)
 	return wrapper
-
-def command(commandname,requiredargs=0,optionalargs=0):
-	def type_decorator(function):
-		@wraps(function)
-		def wrapper(*args,**kwargs):
-			return function(*args,**kwargs)
-		setattr(wrapper,"command",(commandname,requiredargs,optionalargs))
-		return wrapper
-	return type_decorator
 
 def admin(function):
 	@wraps(function)
