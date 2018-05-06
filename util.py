@@ -65,6 +65,8 @@ def listify(candidate):
 	return candidate
 
 def lower(l):
+	if isinstance(l,type({}.keys())):
+		l = [*l]
 	return list(map(str.lower,list(map(str,listify(l)))))
 
 def weeks(w):
