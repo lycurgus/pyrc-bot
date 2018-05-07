@@ -66,6 +66,7 @@ class Blackjack:
 			print("player {} has score {}".format(p,self.seen_hands[p]))
 
 	def score_hand(self,cards):
+		BUST = 22
 		originals = [card[0] for card in cards] #cards are value,suit pairs
 		values = [val for val in originals if val not in ("J","Q","K")]
 		while len(values) < len(originals):
@@ -81,10 +82,10 @@ class Blackjack:
 			for a in aces:
 				high = sum(values[:a]) + 11 + sum(values[a+1:])
 				low = sum(values[:a]) + 1 + sum(values[a+1:])
-				if high < 21:
+				if high < BUST:
 					possible_scores.append(high)
 				else:
-					if low < 21:
+					if low < BUST:
 						possible_scores.append(low)
 			score = max(possible_scores)
 		return score
