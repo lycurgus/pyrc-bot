@@ -89,7 +89,7 @@ class Blackjack:
 			score = max(possible_scores)
 		return score
 
-	def clear_game(self,bot):
+	def clear_game(self):
 		self.playing = False
 		self.seen_hands = {}
 
