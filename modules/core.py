@@ -43,7 +43,7 @@ def handle_quitreport(bot,message,regex_matches=None):
 	user = message.nick
 	reason = message.message
 	if reason == "Registered":
-		print("user {} registered".format(user)
+		print("user {} registered".format(user))
 		return
 	print("user {} is quitting".format(user))
 	for cname,channel in bot.channels.items():
