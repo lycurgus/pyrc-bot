@@ -6,9 +6,6 @@ import re
 import random
 from time import sleep
 
-class Regexes:
-	ctcp = re.compile(r'^\x01(.*)(?: (.*))?\x01$')
-
 class Expectation:
 	re_type = type(re.compile(r'hello, world'))
 	def __init__(self,c,a,p,e,ea=[],ep=[[]]):
@@ -126,20 +123,6 @@ class Pronouns:
 		self.genitive = gen
 		self.possessive = pos
 
-class Timer:
-	def __init__(self):
-		self.timeout = 1
-		self.mark = datetime.datetime.fromtimestamp(1)
-
-	def get(self):
-		return ((datetime.datetime.utcnow() - self.mark) > datetime.timedelta(seconds=self.timeout))
-
-	def set(self):
-		self.mark = datetime.datetime.utcnow()
-
-	def set_timeout(self,timeout):
-		self.timeout = timeout
-
 class Channel:
 	def __init__(self,name):
 		self.last_line = ""
@@ -147,7 +130,6 @@ class Channel:
 		self.activityindex = 0
 		self.topic = ""
 		self.users = {}
-		self.timers = {}
 		self.modes = set()
 		self.name = name
 		sig_tick = signal("TICK-base")
@@ -155,11 +137,6 @@ class Channel:
 			self.decrement_activity()
 		self.dec_chanact = dec_chanact
 		sig_tick.connect(dec_chanact)
-
-	def timer(self,name):
-		if not (name in self.timers.keys()):
-			self.timers[name] = Timer()
-		return self.timers[name]
 
 	def add_user(self,username):
 		self.users[username] = User()
