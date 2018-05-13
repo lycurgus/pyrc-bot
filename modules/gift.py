@@ -55,10 +55,7 @@ def gift_react(bot,message,regex_matches=None):
 			else:
 				bot.commands.action(message.replyto,"sleepily bites {}".format(gift))
 	elif gift.lower() in ["hug","hugs"]:
-		if not bot.getcustom("asleep"):
-			bot.commands.action(message.replyto,"hugs {} back".format(message.sender))
-		else:
-			bot.commands.action(message.replyto,"hugs {} in her sleep".format(message.sender))
+		return #handled by hug.py now
 	elif re.match(r"\b(?:dick|penis|d|cock|phallus)(?:s|es)?\b",gift.lower()):
 		if not bot.getcustom("asleep"):
 			bot.commands.privmsg(message.replyto,"{}: http://imgur.com/fy0hSOG".format(message.sender))

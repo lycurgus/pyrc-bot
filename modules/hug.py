@@ -19,10 +19,18 @@ def givehug(bot,message,regex_matches=None):
 			bot.commands.action(message.replyto,"sleepily hugs {} back".format(message.sender))
 
 @module.action
+@module.regex(r"gives (?:(?:some|a|another|the) )?hugs? to (.*)")
+def givehug2(bot,message,regex_matches=None):
+	if regex_matches.group(1).lower() in util.lower(bot.names):
+		if not bot.getcustom("asleep"):
+			bot.commands.action(message.replyto,"hugs {} back".format(message.sender))
+		else:
+			bot.commands.action(message.replyto,"hugs {} in her sleep".format(message.sender))
+
+@module.action
 @module.regex(r"hugs (.*)")
 def hugs(bot,message,regex_matches=None):
 	hugee = regex_matches.group(1).split(" ")[0]
-	print("hugee was {}".format(hugee))
 	if hugee.lower() in util.lower(bot.names):
 		if not bot.getcustom("asleep"):
 			bot.commands.action(message.replyto,"hugs {} back".format(message.sender))
@@ -56,5 +64,7 @@ def snuggle(bot,message,regex_matches=None):
 hug = module.Module("hug")
 hug.add_function(hugs)
 hug.add_function(givehug)
+hug.add_function(givehug2)
 hug.add_function(snuggle)
 hug.add_function(givesnuggle)
+
