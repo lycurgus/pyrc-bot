@@ -14,6 +14,7 @@ def load_module(bot,message,regex_matches=None):
 		bot.load_module(module_name)
 	except:
 		bot.commands.privmsg(message.replyto,"{}something went wrong!".format("" if message.parameters[0] == bot.nick else "{}: ".format(message.sender)))
+		raise
 	else:
 		bot.commands.privmsg(message.replyto,"{}done!".format("" if message.parameters[0] == bot.nick else "{}: ".format(message.sender)))
 
@@ -30,6 +31,7 @@ def reload_module(bot,message,regex_matches=None):
 			bot.reload_module(module_name)
 		except:
 			bot.commands.privmsg(message.replyto,"{}something went wrong!".format("" if message.parameters[0] == bot.nick else "{}: ".format(message.sender)))
+			raise
 		else:
 			bot.commands.privmsg(message.replyto,"{}done!".format("" if message.parameters[0] == bot.nick else "{}: ".format(message.sender)))
 
