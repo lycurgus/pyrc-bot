@@ -7,6 +7,7 @@ import re
 from datetime import datetime, timedelta
 from util import Channel, NickStatus, Expectation
 from blinker import signal
+from writer import Writer
 
 #TODO define the base tick as a timed function....?
 #TODO (need a spot to put these notes!)
@@ -14,9 +15,20 @@ from blinker import signal
 #idea: a module can either hardcode things or define strings to be added to the bot instance?
 #idea: a separate file for modules' strings?
 
+w = Writer()
+
 @module.type("PRIVMSG")
 def resp_privmsg(bot,message,regex_matches=None):
-	print("{u} ({s}{sep}{c}): {l}".format(u=message.nick,s=bot.servername,sep='' if message.parameters[0].startswith('#') else ':',c=message.parameters[0],l=message.message))
+	line_format = "${{dark_blue}}{u}${{reset}} ({s}{sep}{c}): {ast}{l}"
+	parts = {
+			'u': message.nick,
+			's': bot.servername,
+			'sep': '' if message.parameters[0].startswith('#') else ':',
+			'c': message.parameters[0],
+			'ast': '* ' if message.is_action else '',
+			'l': re.sub(r"({})".format("|".join(bot.names)),r"${light_green}\1${reset}",message.message,flags=re.IGNORECASE)
+		}
+	w.write(line_format.format(**parts))
 	channel = message.channel
 	if channel:
 		if message.nick not in bot.channels[channel].users.keys():
@@ -24,11 +36,14 @@ def resp_privmsg(bot,message,regex_matches=None):
 		bot.channels[channel].line_seen()
 		bot.channels[channel].users[message.nick].talked(message.message)
 	if bot.being_addressed(message):
-		print('being addressed')
+		w.write('being ${yellow}addressed${reset}')
 
 @module.type("QUIT")
 def handle_quitreport(bot,message,regex_matches=None):
 	print("user {} is quitting".format(message.nick))
+	reason = message.message
+	if reason == "Registered":
+		return
 	for cname,channel in bot.channels.items():
 		bot.channels[cname].remove_user(message.nick)
 
@@ -45,7 +60,6 @@ def handle_partreport(bot,message,regex_matches=None):
 	channel = message.channel
 	if not channel:
 		print(message.raw)
-	reason = message.message
 	print("user {} left {}".format(message.nick,channel))
 	if channel in bot.channels.keys():
 		if message.nick in bot.channels[channel].users.keys():
@@ -102,7 +116,7 @@ def resp_err(bot,message,regex_matches=None):
 
 @module.type("PING")
 def resp_ping(bot,message,regex_matches=None):
-	print('{} -- got ping, sending pong'.format(datetime.now()))
+	w.write('${{light_red}}{}${{reset}} -- got ping, sending pong'.format(datetime.now()))
 	bot.commands.pong(message.message)
 
 @module.type("MODE")
