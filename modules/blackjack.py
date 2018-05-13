@@ -71,10 +71,10 @@ class Blackjack:
 		values = [val for val in originals if val not in ("J","Q","K")]
 		while len(values) < len(originals):
 			values.append(10)
+		print(values)
 		aces = [i for i,x in enumerate(values) if x == "A"]
 		values = [int(x) for x in values if x != "A"]
 		score = 0
-		print(values)
 		if aces == []:
 			score = sum(values)
 		else:
