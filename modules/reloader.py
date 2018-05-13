@@ -5,29 +5,39 @@ if not ".." in sys.path:
 import module
 
 @module.admin
-#@module.direct
+@module.direct
 @module.type("PRIVMSG")
-@module.regex(r'^load\s+([^\s]*)$')
-def load_module(bot,line,regex_matches=None):
+@module.regex(r'.*\sload\s+([^\s]*)')
+def load_module(bot,message,regex_matches=None):
 	module_name = regex_matches.group(1)
-	bot.load_module(module_name)
+	try:
+		bot.load_module(module_name)
+	except:
+		bot.commands.privmsg(message.replyto,"{}something went wrong!".format("" if message.parameters[0] == bot.nick else "{}: ".format(message.sender)))
+	else:
+		bot.commands.privmsg(message.replyto,"{}done!".format("" if message.parameters[0] == bot.nick else "{}: ".format(message.sender)))
 
 @module.admin
-#@module.direct
+@module.direct
 @module.type("PRIVMSG")
-@module.regex(r'^reload\s+([^\s]*)$')
-def reload_module(bot,line,regex_matches=None):
+@module.regex(r'.*\sreload\s+([^\s]*)$')
+def reload_module(bot,message,regex_matches=None):
 	module_name = regex_matches.group(1)
 	if module_name == "all":
 		bot.reload_all_modules()
 	else:
-		bot.reload_module(module_name)
+		try:
+			bot.reload_module(module_name)
+		except:
+			bot.commands.privmsg(message.replyto,"{}something went wrong!".format("" if message.parameters[0] == bot.nick else "{}: ".format(message.sender)))
+		else:
+			bot.commands.privmsg(message.replyto,"{}done!".format("" if message.parameters[0] == bot.nick else "{}: ".format(message.sender)))
 
 @module.admin
-#@module.direct
+@module.direct
 @module.type("PRIVMSG")
-@module.regex(r'^unload\s+([^\s]*)$')
-def unload_module(bot,line,regex_matches=None):
+@module.regex(r'.*\sunload\s+([^\s]*)$')
+def unload_module(bot,message,regex_matches=None):
 	module_name = regex_matches.group(1)
 	if module_name == "all":
 		bot.unload_all_modules()
