@@ -40,12 +40,14 @@ def resp_privmsg(bot,message,regex_matches=None):
 
 @module.type("QUIT")
 def handle_quitreport(bot,message,regex_matches=None):
-	print("user {} is quitting".format(message.nick))
+	user = message.nick
 	reason = message.message
 	if reason == "Registered":
+		print("user {} registered".format(user)
 		return
+	print("user {} is quitting".format(user))
 	for cname,channel in bot.channels.items():
-		bot.channels[cname].remove_user(message.nick)
+		bot.channels[cname].remove_user(user)
 
 @module.type("JOIN")
 def handle_joinreport(bot,message,regex_matches=None):
