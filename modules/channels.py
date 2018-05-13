@@ -48,7 +48,8 @@ def bot_quit(bot,message,regex_matches=None):
 	bot.quit = True
 	bot.commands.quit(quitmessage)
 
-@module.regex(r'^restart(?: :(.*))?$')
+@module.direct
+@module.regex(r'restart(?: :(.*))?$')
 @module.admin
 @module.type("PRIVMSG")
 def bot_restart(bot,message,regex_matches=None):
@@ -72,10 +73,9 @@ def bot_restart(bot,message,regex_matches=None):
 @module.timer("channelcheck")
 def check_channel_members(bot,message,regex_matches=None):
 	channels = list(bot.channels.keys())
-	#print("requesting channel members for:\n{}".format(", ".join(channels)))
 	bot.commands.names(channels)
 
-@module.regex(r'^connect (.*)(?: (.*) (.*))?$')
+@module.regex(r'connect (.*)(?: (.*) (.*))?$')
 @module.admin
 @module.direct
 @module.type("PRIVMSG")
@@ -106,7 +106,7 @@ def bot_connect(bot,message,regex_matches=None):
 			'auto': False
 			})
 
-@module.regex(r'^connect (.*)(?: (.*) (.*))?$')
+@module.regex(r'connect (.*)(?: (.*) (.*))?$')
 @module.not_admin
 @module.direct
 @module.type("PRIVMSG")
@@ -116,7 +116,7 @@ def unauthorised_connect(bot,message,regex_matches=None):
 	else:
 		bot.commands.action(message.replyto,"rolls over in her sleep to ignore {}".format(message.sender))
 
-@module.regex(r'^disconnect(?: (.*))?$')
+@module.regex(r'disconnect(?: (.*))?$')
 @module.admin
 @module.direct
 @module.type("PRIVMSG")
@@ -134,7 +134,7 @@ def bot_disconnect(bot,message,regex_matches=None):
 		'name': server
 		})
 
-@module.regex(r'^disconnect(?: (.*))?$')
+@module.regex(r'disconnect(?: (.*))?$')
 @module.not_admin
 @module.direct
 @module.type("PRIVMSG")

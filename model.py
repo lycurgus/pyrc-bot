@@ -8,7 +8,7 @@ import datetime
 import random
 from IrcQueuedCommands import IRCQueuedCommands
 from blinker import signal
-from util import random_characters, hours, minutes, days, Timer, listify, chance
+from util import random_characters, hours, minutes, days, listify, chance
 import math
 
 class Bot:
@@ -250,7 +250,7 @@ class Bot:
 		return self.timeouts[name][0]
 
 	def being_addressed(self,message):
-		text = message.message
+		text = message.original
 		direct = message.parameters[0] == self.nick
 		match = any([n.lower() in text.lower() for n in self.names])
 		if match or direct:
@@ -284,7 +284,7 @@ class Bot:
 				else:
 					time.sleep(wait)
 					self.transport.write(out)
-					time.sleep(0.5)
+					time.sleep(0.1)
 			time.sleep(0.1)
 
 	def console_input():
