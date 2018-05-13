@@ -173,7 +173,7 @@ def boss_report(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"it's {}".format(bot.boss))
 
 @module.sender("taiya")
-@module.regex(r"this too shall pass")
+@module.regex(r".*fortune cookie.*this too shall pass.*")
 def this_too(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"https://www.youtube.com/watch?v=qybUFnY7Y8w")
 
@@ -211,8 +211,13 @@ def c_sharp(bot,message,regex_matches=None):
 		if util.chance(0.3):
 			bot.commands.privmsg(message.replyto,"yay C#!")
 
+@module.timeout("snart")
 @module.regex(r"\*snart\*")
 def snart(bot,message,regex_matches=None):
+	if bot.getcustom("asleep"):
+		if util.chance(0.9):
+			bot.commands.privmsg(message.replyto,"*snore-t*")
+			return
 	bot.commands.privmsg(message.replyto,"*snart*")
 
 general = module.Module("general")
@@ -239,3 +244,4 @@ general.add_function(professor_oak)
 general.add_function(module_report)
 general.add_function(c_sharp)
 general.add_function(snart)
+general.add_timeout("snart",seconds=20)
