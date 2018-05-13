@@ -58,10 +58,16 @@ def page_title(bot,message,regex_matches=None):
 def lenny(bot,message,regex_matches=None):
 	bot.commands.privmsg(message.replyto,"( ͡° ͜ʖ ͡°)")
 
+@module.regex(r"!shrug$")
+@module.user_not_present("saoirse")
+def shrug(bot,message,regex_matches=None):
+	bot.commands.privmsg(message.replyto,"¯\_(ツ)_/¯")
+
 saoirse = module.Module("saoirse")
 saoirse.add_function(yay_linux)
 saoirse.add_function(yay_cplusplus)
 saoirse.add_function(curse_windows)
 saoirse.add_function(page_title)
 saoirse.add_function(lenny)
+saoirse.add_function(shrug)
 saoirse.add_timeout("yay_things",minutes=2)
