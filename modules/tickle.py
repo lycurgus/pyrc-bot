@@ -13,9 +13,9 @@ def tickle_respond(bot,message,regex_matches=None):
 	if not regex_matches.group(1).lower() in util.lower(bot.names):
 		return
 	if not bot.getcustom("asleep"):
-		response = random.choice(["is tickled"])
+		response = random.choice(["giggles","smiles and giggles"])
 	else:
-		response = random.choice(["is tickled while asleep"])
+		response = random.choice(["squirms in her sleep"])
 	bot.commands.action(message.replyto,response)
 
 tickle = module.Module("tickle")
