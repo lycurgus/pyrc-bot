@@ -138,7 +138,7 @@ class Module:
 			if hasattr(function,"regex"):
 				r = getattr(function,"regex")
 				if "_BOTNAMES_" in r.pattern:
-					newpattern = re.sub(r"_BOTNAMES_","(?:{})".format("|".join(bot.names)))
+					newpattern = re.sub(r"_BOTNAMES_","(?:{})".format("|".join(bot.names)),r.pattern)
 					setattr(function,"regex",re.compile(newpattern,r.flags))
 		for tfunction in self.timed_functions:
 			bot.register_timed_function(tfunction,self.name)

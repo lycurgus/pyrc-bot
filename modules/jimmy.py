@@ -37,15 +37,18 @@ def backtowork(bot,message,regex_matches=None):
 def timecheck(bot,message,regex_matches=None):
 	target = regex_matches.group(1)
 	if target.lower() == bot.nick.lower():
-		bot.commands.privmsg(message.replyto,"time to get a watch! hahahaha")
+		if not bot.getcustom("asleep"):
+			bot.commands.privmsg(message.replyto,"time to get a watch! hahahaha")
+		else:
+			bot.commands.action(message.replyto,"snores")
 		return
 	c = {
 			'nick': target,
 			'type': 'NOTICE',
-			'regex': re.compile(r"^\x01TIME .*\x01$")
+			'regex': re.compile(r"^TIME .*$")
 		}
 	a = [bot.commands.privmsg]
-	p = [[message.replyto,[re.compile(r'^\x01TIME (.*)\x01$'),1],True]]
+	p = [[message.replyto,[re.compile(r'^TIME (.*)$'),1],True]]
 	e = timedelta(minutes=1)
 	bot.expectations.append(Expectation(c,a,p,e))
 	bot.commands.ctcp_ask(target,"TIME")

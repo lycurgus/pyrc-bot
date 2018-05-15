@@ -47,7 +47,7 @@ class Expectation:
 			for k,p in enumerate(pset):
 				if isinstance(p,list):
 					if type(p[0]) == Expectation.re_type:
-						self.parameters[j][k] = p[0].match(line.rest).group(p[1])
+						self.parameters[j][k] = p[0].match(message.original).group(p[1])
 		for i,action in enumerate(self.actions):
 			action(*self.parameters[i])
 		return True
