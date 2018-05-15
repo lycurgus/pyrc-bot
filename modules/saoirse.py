@@ -31,8 +31,7 @@ def yay_cplusplus(bot,message,regex_matches=None):
 @module.timer("yay_things")
 def curse_windows(bot,message,regex_matches=None):
 	if not bot.getcustom('asleep'):
-		if util.chance(0.6):
-			bot.commands.action(message.replyto,"shakes fist at Microsoft")
+		bot.commands.action(message.replyto,"shakes fist at Microsoft")
 
 @module.user_not_present("saoirse")
 @module.sender_not(["taiya","mechataiya","narwhaltaiya"])
