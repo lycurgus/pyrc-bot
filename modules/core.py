@@ -19,9 +19,10 @@ w = Writer()
 
 @module.type("PRIVMSG")
 def resp_privmsg(bot,message,regex_matches=None):
-	line_format = "${{dark_blue}}{u}${{reset}} ({s}{sep}{c}): {ast}{l}"
+	line_format = "${{dark_blue}}{u}${{reset}} (${{{clr}}}{s}{sep}{c}${{reset}}): {ast}{l}"
 	parts = {
 			'u': message.nick,
+			'clr': 'light_red' if bot.being_addressed(message) else 'reset',
 			's': bot.servername,
 			'sep': '' if message.parameters[0].startswith('#') else ':',
 			'c': message.parameters[0],
@@ -35,8 +36,6 @@ def resp_privmsg(bot,message,regex_matches=None):
 			bot.channels[channel].add_user(message.nick)
 		bot.channels[channel].line_seen()
 		bot.channels[channel].users[message.nick].talked(message.message)
-	if bot.being_addressed(message):
-		w.write('being ${yellow}addressed${reset}')
 
 @module.type("QUIT")
 def handle_quitreport(bot,message,regex_matches=None):
@@ -54,7 +53,7 @@ def handle_joinreport(bot,message,regex_matches=None):
 	channel = message.message
 	joiner = message.nick
 	if channel and not (joiner == bot.nick):
-		print("{} joined {}".format(joiner,channel))
+		w.write("${{light_blue}}{}${{reset}} joined ${{light_green}}{}${{reset}}".format(joiner,channel))
 		bot.channels[channel].add_user(joiner)
 
 @module.type("PART")
@@ -114,7 +113,7 @@ def resp_notice(bot,message,regex_matches=None):
 
 @module.type("ERROR")
 def resp_err(bot,message,regex_matches=None):
-	print("{} {} {} {}".format(message.nick,message.command,message.parameters[0],message.message))
+	w.write("{} ${{dark_red}}{}${{reset}} {} {}".format(message.nick,message.command,message.parameters[0],message.message))
 
 @module.type("PING")
 def resp_ping(bot,message,regex_matches=None):
