@@ -68,38 +68,52 @@ class Blackjack:
 	def score_hand(self,cards):
 		BUST = 22
 		originals = [card[0] for card in cards] #cards are value,suit pairs
-		values = [val for val in originals if val not in ("J","Q","K")]
-		while len(values) < len(originals):
-			values.append(10)
+		values = [10 if val in ("J","Q","K") else val for val in originals]
 		print(values)
-		aces = [i for i,x in enumerate(values) if x == "A"]
-		values = [int(x) for x in values if x != "A"]
+		values = [x if x == "A" else int(x) for x in values]
 		score = 0
-		if aces == []:
+		if not "A" in values:
 			score = sum(values)
 		else:
-			possible_scores = []
-			for a in aces:
-				high = sum(values[:a]) + 11 + sum(values[a+1:])
-				low = sum(values[:a]) + 1 + sum(values[a+1:])
-				if high < BUST:
-					possible_scores.append(high)
+			accum = 0
+			for card in values:
+				if card == "A":
+					if accum + 11 > BUST:
+						accum += 1
 				else:
-					if low < BUST:
-						possible_scores.append(low)
-			score = max(possible_scores)
+					accum += card
+			if accum < BUST:
+				if accum > score:
+					score = accum
+			else:
+				score = 0
 		return score
 
 	def clear_game(self):
 		self.playing = False
 		self.seen_hands = {}
 
+@module.regex(r"_BOTNAMES_,?:?\ ?what(?:'| i)s my score\??")
+def get_score(bot,message,regex_matches=None):
+	if not message.channel:
+		bot.commands.privmsg(message.replyto,"need to be in a channel..!")
+	b = bot.getcustom('blackjack_{}'.format(message.channel))
+	if not b:
+		bot.commands.privmsg(message.replyto,"no game in progress..!")
+		return
+	if message.sender in b.seen_hands.keys():
+		bot.commands.privmsg(message.replyto,"you have {}, {}".format(b.seen_hands[message.sender],message.sender))
+	else:
+		bot.commands.privmsg(message.replyto,"you're not playing, {}".format(message.sender))
+
 
 @module.type("PRIVMSG")
 @module.sender(["goatbot"])
 #@module.regex(r"(\d{1,2}|\A|\J|\Q|\K)\ ?(♠|♥|♦|♣)")
 def handle_game(bot,message,regex_matches=None):
-	b = bot.getcustom('blackjack')
+	b = bot.getcustom('blackjack_{}'.format(message.channel))
+	if not b:
+		bot.setcustom('blackjack_{}'.format(message.channel),Blackjack())
 	b.parse_hand(message.message)
 	#bot.commands.privmsg(message.replyto,b.get_action(bot.nick))
 	if any([winmsg in message.message for winmsg in ("A Tie.","claiming the bet","is paid out","is returned to")]):
@@ -108,9 +122,6 @@ def handle_game(bot,message,regex_matches=None):
 		#Vivacia has [5 ♥] [9 ♥] [2 ♥]; A score of 16, beating Goatbot. $32.35 is paid out to Vivacia.
 		b.clear_game()
 
-def blackjack_setup(bot):
-	bot.setcustom('blackjack',Blackjack())
-
 blackjack = module.Module("blackjack")
 blackjack.add_function(handle_game)
-blackjack.setup_function = blackjack_setup
+blackjack.add_function(get_score)
