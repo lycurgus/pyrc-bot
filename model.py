@@ -29,6 +29,7 @@ class Bot:
 		self.timers = {}
 		self.counters = {}
 		self.seen_users = {}
+		self.last_seen_line = None
 		self.expectations = []
 		self.tick = 0
 		sig_tick = signal("TICK-base")
@@ -165,6 +166,7 @@ class Bot:
 		self.check_expectations(message)
 		for module in list(self.modules.values())[:]:
 			module.check_functions(message,self)
+		self.last_seen_line = message
 
 	def is_admin(self,nick):
 		r = False
