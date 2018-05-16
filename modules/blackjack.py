@@ -72,22 +72,19 @@ class Blackjack:
 		print(values)
 		values = [x if x == "A" else int(x) for x in values]
 		score = 0
-		if not "A" in values:
-			score = sum(values)
-		else:
-			accum = 0
-			for card in values:
-				if card == "A":
-					accum += 11
-					if accum > BUST:
-						accum -= 10
-				else:
-					accum += card
-			if accum < BUST:
-				if accum > score:
-					score = accum
+		accum = 0
+		for card in values:
+			if card == "A":
+				accum += 11
+				if accum > BUST:
+					accum -= 10
 			else:
-				score = 0
+				accum += card
+		if accum < BUST:
+			if accum > score:
+				score = accum
+		else:
+			score = 0
 		return score
 
 	def clear_game(self):
