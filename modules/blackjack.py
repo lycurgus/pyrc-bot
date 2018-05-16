@@ -78,8 +78,9 @@ class Blackjack:
 			accum = 0
 			for card in values:
 				if card == "A":
-					if accum + 11 > BUST:
-						accum += 1
+					accum += 11
+					if accum > BUST:
+						accum -= 10
 				else:
 					accum += card
 			if accum < BUST:
@@ -93,7 +94,7 @@ class Blackjack:
 		self.playing = False
 		self.seen_hands = {}
 
-@module.regex(r"_BOTNAMES_,?:?\ ?what(?:'| i)s my score\??")
+@module.regex(r"_BOTNAMES_,?:?\ ?(?:what(?:'| i)s my score\??|bj score)",re.IGNORECASE)
 def get_score(bot,message,regex_matches=None):
 	if not message.channel:
 		bot.commands.privmsg(message.replyto,"need to be in a channel..!")
@@ -102,7 +103,10 @@ def get_score(bot,message,regex_matches=None):
 		bot.commands.privmsg(message.replyto,"no game in progress..!")
 		return
 	if message.sender in b.seen_hands.keys():
-		bot.commands.privmsg(message.replyto,"you have {}, {}".format(b.seen_hands[message.sender],message.sender))
+		if not bot.getcustom("asleep"):
+			bot.commands.privmsg(message.replyto,"you have {}, {}".format(b.seen_hands[message.sender],message.sender))
+		else:
+			bot.commands.privmsg(message.replyto,"{}".format(b.seen_hands[message.sender]))
 	else:
 		bot.commands.privmsg(message.replyto,"you're not playing, {}".format(message.sender))
 
@@ -113,7 +117,8 @@ def get_score(bot,message,regex_matches=None):
 def handle_game(bot,message,regex_matches=None):
 	b = bot.getcustom('blackjack_{}'.format(message.channel))
 	if not b:
-		bot.setcustom('blackjack_{}'.format(message.channel),Blackjack())
+		b = Blackjack()
+		bot.setcustom('blackjack_{}'.format(message.channel),b)
 	b.parse_hand(message.message)
 	#bot.commands.privmsg(message.replyto,b.get_action(bot.nick))
 	if any([winmsg in message.message for winmsg in ("A Tie.","claiming the bet","is paid out","is returned to")]):
