@@ -45,11 +45,11 @@ def timecheck(bot,message,regex_matches=None):
 	c = {
 			'nick': target,
 			'type': 'NOTICE',
-			'regex': re.compile(r"^TIME .*$")
+			'regex': re.compile(r"^TIME (?!\s*gb ).*$")
 		}
 	a = [bot.commands.privmsg]
 	p = [[message.replyto,[re.compile(r'^TIME (.*)$'),1],True]]
-	e = timedelta(minutes=1)
+	e = timedelta(seconds=15)
 	bot.expectations.append(Expectation(c,a,p,e))
 	bot.commands.ctcp_ask(target,"TIME")
 
