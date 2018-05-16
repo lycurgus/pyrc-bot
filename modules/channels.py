@@ -6,7 +6,7 @@ import module
 import random
 from blinker import signal
 
-@module.regex(r'^join (#[^\s]*)$')
+@module.regex(r'_BOTNAMES_:?,?\ ?join (#[^\s]*)$')
 @module.admin
 @module.type("PRIVMSG")
 def bot_join(bot,message,regex_matches=None):
@@ -14,7 +14,7 @@ def bot_join(bot,message,regex_matches=None):
 		new_channel = regex_matches.group(1)
 		bot.commands.join(new_channel)
 
-@module.regex(r'^part (#[^\s]*)$')
+@module.regex(r'_BOTNAMES_:?,?\ ?part (#[^\s]*)$')
 @module.admin
 @module.type("PRIVMSG")
 def bot_part(bot,message,regex_matches=None):
@@ -26,7 +26,7 @@ def bot_part(bot,message,regex_matches=None):
 		bot.commands.part(channel)
 		del bot.channels[channel]
 
-@module.regex(r'^quit(?: :(.*))?$')
+@module.regex(r'_BOTNAMES_:?,?\ ?quit(?: :(.*))?$')
 @module.admin
 @module.type("PRIVMSG")
 def bot_quit(bot,message,regex_matches=None):
@@ -48,8 +48,7 @@ def bot_quit(bot,message,regex_matches=None):
 	bot.quit = True
 	bot.commands.quit(quitmessage)
 
-@module.direct
-@module.regex(r'restart(?: :(.*))?$')
+@module.regex(r'_BOTNAMES_:?,?\ ?restart(?: :(.*))?$')
 @module.admin
 @module.type("PRIVMSG")
 def bot_restart(bot,message,regex_matches=None):
