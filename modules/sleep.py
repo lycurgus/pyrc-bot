@@ -50,6 +50,7 @@ def check_awake(bot,line,regex_matches=None):
 			for channel in bot.channels:
 				bot.commands.action(channel,"yawns")
 				bot.commands.privmsg(channel,"time to sleep, good night!")
+		bot.timeout('justwokeorslept').set()
 
 @module.admin
 @module.timeout("nap")
