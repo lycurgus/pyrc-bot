@@ -132,12 +132,12 @@ def set_back(bot,message,regex_matches=None):
 def rollcall():
 	if True:
 		pass
-	elif line.rest.lower() in ["bots, roll call","bots: roll call","who here is a bot?","who are the bots?","who here is a bot","who are the bots"]:
+	elif message.message.lower() in ["bots, roll call","bots: roll call","who here is a bot?","who are the bots?","who here is a bot","who are the bots"]:
 		if not bot.getcustom("asleep"):
-			bot.commands.action(replyto,"raises a paw")
-			bot.commands.privmsg(replyto,":)")
+			bot.commands.action(message.replyto,"raises a paw")
+			bot.commands.privmsg(message.replyto,":)")
 		else:
-			bot.commands.action(replyto,"raises a paw sleepily")
+			bot.commands.action(message.replyto,"raises a paw sleepily")
 
 
 @module.action
