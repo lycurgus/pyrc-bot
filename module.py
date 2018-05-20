@@ -18,9 +18,9 @@ def check_function(function,message,bot):
 		if hasattr(function,a):
 			at = getattr(function,a,None)
 			if a == "direct":
-				if any([message.message.startswith(bn.lower()) for bn in bot.names]):
+				if any([message.message.startswith(bn.lower()) for bn in util.lower(bot.names)]):
 					print('original message: {}'.format(message.original))
-					message.message = re.sub(r'{}(?:[:, ])?'.format('|'.join(bot.names)),'',message.original,count=1,flags=re.IGNORECASE)
+					message.message = re.sub(r'{}:?,?\ ?'.format('|'.join(bot.names)),'',message.original,count=1,flags=re.IGNORECASE)
 					print('altered message: {}'.format(message.message))
 				if not bot.being_addressed(message): return (False,None)
 			elif a == "disable":
