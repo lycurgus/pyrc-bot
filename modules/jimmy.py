@@ -4,8 +4,8 @@ if not ".." in sys.path:
 
 import module
 import re
-from datetime import timedelta
-from util import Expectation
+from datetime import timedelta, datetime
+import util
 
 jimmy_nicks = ["jimmy","jimmy42","cha0zzb0t","blob","sleepybalrog","hungrybalrog","redhotbalrog","uberjimmy","redhotjimmy"]
 
@@ -31,6 +31,30 @@ def backtowork(bot,message,regex_matches=None):
 	bot.commands.action(message.replyto,"yells at {}".format(message.sender))
 	bot.commands.action(message.replyto,"takes off the scary mask")
 
+def time_string():
+	partial = ""
+	numbers = ["one","two","three","four","five","six","seven","eight","nine","ten","eleven"]
+	hours = ["midnight"] + numbers + ["noon"] + numbers + ["midnight"]
+	time = datetime.now()
+	hr = time.hour
+	mn = time.minute
+	if mn < 10: partial = "just after"
+	elif mn < 20: partial = "a quarter past"
+	elif mn < 40: partial = "half past"
+	elif mn < 50:
+		partial = "a quarter to"
+		hr += 1
+	else:
+		partial = "almost"
+		hr += 1
+	if hr < 12: day = "in the morning"
+	elif hr < 13: day = ""
+	elif hr < 18: day = "in the afternoon"
+	elif hr < 20: day = "in the evening"
+	elif hr < 24: day = "at night"
+	else: day = ""
+	return "it's {} {} {}".format(partial,hours[hr],day)
+
 @module.user_not_present(jimmy_nicks)
 @module.type("PRIVMSG")
 @module.regex(r"^!time (.*)$")
@@ -38,7 +62,10 @@ def timecheck(bot,message,regex_matches=None):
 	target = regex_matches.group(1)
 	if target.lower() == bot.nick.lower():
 		if not bot.getcustom("asleep"):
-			bot.commands.privmsg(message.replyto,"time to get a watch! hahahaha")
+			if util.chance(0.3):
+				bot.commands.privmsg(message.replyto,"time to get a watch! hahahaha")
+			else:
+				bot.commands.privmsg(message.replyto,time_string())
 		else:
 			bot.commands.action(message.replyto,"snores")
 		return
