@@ -44,7 +44,7 @@ def break_silence(bot,message,regex_matches=None):
 		elif (act == "looks around for anyone to play with") or (act == "looks around for someone to play with"):
 			c = {
 					'type': 'PRIVMSG',
-					'regex': re.compile(r"^\x01ACTION .*play.*(?:{}).*\x01$".format("|".join(bot.names)))
+					'regex': re.compile(r"^ACTION .*play.*_BOTNAMES_.*$")
 				}
 			a = [bot.commands.action]
 			p = [[channel,"giggles delightedly"]]
