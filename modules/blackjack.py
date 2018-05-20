@@ -26,6 +26,7 @@ class Blackjack:
 	def __init__(self):
 		self.playing = False
 		self.seen_hands = {}
+		self.player_scores = {}
 		self.wallet = 0.0
 
 	def get_action(self,nick,amount=5):#TODO get a real amount somehow
@@ -44,9 +45,9 @@ class Blackjack:
 		#self.playing = True
 		#print(repr(line))
 		no_colours = Blackjack.colour_reset.sub("",Blackjack.colour_pattern.sub("",line))
-		print(repr(no_colours))
 		if not any([suit in line for suit in ("♠","♥","♦","♣")]):
 			return
+		print(repr(no_colours))
 		for linetype in Blackjack.lines:
 			match = linetype.match(no_colours)
 			if not match:
@@ -61,26 +62,29 @@ class Blackjack:
 				d = ""
 			cards = re.findall(Blackjack.card_pattern,h)
 			if not p in self.seen_hands.keys():
-				self.seen_hands[p] = 0
-			self.seen_hands[p] += self.score_hand(cards)
-			print("player {} has score {}".format(p,self.seen_hands[p]))
+				self.seen_hands[p] = []
+			self.seen_hands[p] += cards
+			self.player_scores[p] = self.score_hand(self.seen_hands[p])
+			print("player {} has score {}".format(p,self.player_scores[p]))
 
 	def score_hand(self,cards):
-		BUST = 22
 		originals = [card[0] for card in cards] #cards are value,suit pairs
 		values = [10 if val in ("J","Q","K") else val for val in originals]
 		print(values)
-		values = [x if x == "A" else int(x) for x in values]
 		score = 0
 		accum = 0
+		aces = 0
 		for card in values:
 			if card == "A":
-				accum += 11
-				if accum > BUST:
-					accum -= 10
+				aces += 1
 			else:
-				accum += card
-		if accum < BUST:
+				accum += int(card)
+		while aces:
+			accum += 1
+			if accum > 12:
+				accum += 10
+			aces -= 1
+		if accum < 22:
 			if accum > score:
 				score = accum
 		else:
@@ -90,6 +94,7 @@ class Blackjack:
 	def clear_game(self):
 		self.playing = False
 		self.seen_hands = {}
+		self.player_scores = {}
 
 @module.regex(r"_BOTNAMES_,?:?\ ?(?:what(?:'| i)s my score\??|bj score)",re.IGNORECASE)
 def get_score(bot,message,regex_matches=None):
@@ -99,11 +104,20 @@ def get_score(bot,message,regex_matches=None):
 	if not b:
 		bot.commands.privmsg(message.replyto,"no game in progress..!")
 		return
-	if message.sender in b.seen_hands.keys():
+	if message.sender in b.player_scores.keys():
+		c = len(b.seen_hands[message.sender])
+		s = b.player_scores[message.sender]
+		blackjack = (c ==2 and s == 21)
 		if not bot.getcustom("asleep"):
-			bot.commands.privmsg(message.replyto,"you have {}, {}".format(b.seen_hands[message.sender],message.sender))
+			if blackjack:
+				bot.commands.privmsg(message.replyto,"you have blackjack, {}".format(message.sender))
+			else:
+				bot.commands.privmsg(message.replyto,"you have {}, {}".format(s,message.sender))
 		else:
-			bot.commands.privmsg(message.replyto,"{}".format(b.seen_hands[message.sender]))
+			if blackjack:
+				bot.commands.privmsg(message.replyto,"blackjack.")
+			else:
+				bot.commands.privmsg(message.replyto,"{}".format(b.player_scores[message.sender]))
 	else:
 		bot.commands.privmsg(message.replyto,"you're not playing, {}".format(message.sender))
 
