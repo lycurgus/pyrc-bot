@@ -9,7 +9,7 @@ import util
 articles = ["some","the","his","her","their","an","a","another",""]
 verbs = ["gives","hands","tosses","passes","feeds"]
 
-gift_pattern = r"{1} {2} {0}(.*)|{1} {0}(.*) to {2}".format("".join(["(?:{} )?".format(a) for a in articles]),"(?:{})".format("|".join(verbs)),"_BOTNAMES_")
+gift_pattern = r"{1} _BOTNAMES_ {0}(.*)|{1} {0}(.*) to _BOTNAMES_".format("".join(["(?:{} )?".format(a) for a in articles]),"(?:{})".format("|".join(verbs)))
 
 @module.timeout("gift")
 @module.action
