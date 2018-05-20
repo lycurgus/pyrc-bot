@@ -45,7 +45,7 @@ def timecheck(bot,message,regex_matches=None):
 	c = {
 			'nick': target,
 			'type': 'NOTICE',
-			'regex': re.compile(r"^TIME (?!\s*gb ).*$")
+			'regex': re.compile(r"^TIME (?!\s*(?:gb|goat(?:bot)?) ).*$")
 		}
 	a = [bot.commands.privmsg]
 	p = [[message.replyto,[re.compile(r'^TIME (.*)$'),1],True]]
