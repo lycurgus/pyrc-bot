@@ -8,10 +8,8 @@ import util
 
 @module.type("PRIVMSG")
 @module.action
-@module.regex(r"tickles ([^\s]*).*")
+@module.regex(r"tickles _BOTNAMES_.*")
 def tickle_respond(bot,message,regex_matches=None):
-	if not regex_matches.group(1).lower() in util.lower(bot.names):
-		return
 	if not bot.getcustom("asleep"):
 		response = random.choice(["giggles","smiles and giggles"])
 	else:
