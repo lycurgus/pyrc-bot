@@ -10,7 +10,7 @@ import urllib.request
 @module.user_not_present("saoirse")
 @module.type("PRIVMSG")
 @module.regex(r".*linux.*")
-@module.timer("yay_things")
+@module.timeout("yay_things")
 def yay_linux(bot,message,regex_matches=None):
 	if not bot.getcustom('asleep'):
 		if util.chance(0.6):
@@ -19,7 +19,7 @@ def yay_linux(bot,message,regex_matches=None):
 @module.user_not_present("saoirse")
 @module.type("PRIVMSG")
 @module.regex(r".*c\+\+.*")
-@module.timer("yay_things")
+@module.timeout("yay_things")
 def yay_cplusplus(bot,message,regex_matches=None):
 	if not bot.getcustom('asleep'):
 		if util.chance(0.6):
@@ -28,7 +28,7 @@ def yay_cplusplus(bot,message,regex_matches=None):
 @module.user_not_present("saoirse")
 @module.type("PRIVMSG")
 @module.regex(r".*(?:windows|microsoft).*")
-@module.timer("yay_things")
+@module.timeout("yay_things")
 def curse_windows(bot,message,regex_matches=None):
 	if not bot.getcustom('asleep'):
 		bot.commands.action(message.replyto,"shakes fist at Microsoft")
