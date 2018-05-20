@@ -49,7 +49,7 @@ def break_silence(bot,message,regex_matches=None):
 			a = [bot.commands.action]
 			p = [[channel,"giggles delightedly"]]
 			e = timedelta(minutes=2)
-			bot.expectations.append(util.Expectation(c,a,p,e))
+			bot.expectations.append(util.Expectation(bot,c,a,p,e))
 
 breaksilence = module.Module("breaksilence")
 breaksilence.add_function(break_silence)

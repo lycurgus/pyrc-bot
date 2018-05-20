@@ -50,7 +50,7 @@ def timecheck(bot,message,regex_matches=None):
 	a = [bot.commands.privmsg]
 	p = [[message.replyto,[re.compile(r'^TIME (.*)$'),1],True]]
 	e = timedelta(seconds=15)
-	bot.expectations.append(Expectation(c,a,p,e))
+	bot.expectations.append(util.Expectation(bot,c,a,p,e))
 	bot.commands.ctcp_ask(target,"TIME")
 
 @module.user_not_present(jimmy_nicks)

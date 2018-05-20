@@ -73,10 +73,11 @@ def moon(bot,message,regex_matches=None):
 			}
 		a = [bot.commands.privmsg]
 		p = [[bot.boss,"hi this is an expectation-dependent response wow!"]]
+		e = timedelta(minutes=1)
 		ea = [bot.commands.privmsg]
 		ep = [[bot.boss,"you never got back to me! :<"]]
-		if line.nick == bot.boss:
-			bot.expectations.append(Expectation(c,a,p,timedelta(minutes=1),ea,ep))
+		if message.nick == bot.boss:
+			bot.expectations.append(util.Expectation(bot,c,a,p,e,ea,ep))
 
 @module.regex(r"^cani\?$")
 def cani(bot,message,regex_matches=None):

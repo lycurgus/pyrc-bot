@@ -94,7 +94,7 @@ def handle_invite(bot,message,regex_matches=None):
 		p = [[chan]]
 		e = timedelta(minutes=10)
 		ea, ep = [bot.commands.privmsg], [[message.nick,"sorry, my boss didn't want me to join"]] #expiry actions, expiry parameters
-		bot.expectations.append(Expectation(c,a,p,e,ea,ep))
+		bot.expectations.append(Expectation(bot,c,a,p,e,ea,ep))
 
 @module.type("KICK")
 def handle_kick(bot,message,regex_matches=None):
@@ -221,7 +221,7 @@ def handle_nameslist(bot,message,regex_matches=None):
 	e = timedelta(minutes=5)
 	ea = [bot.flags,bot.removecustom]
 	ep = [[flagname,False],[customname]]
-	bot.expectations.append(Expectation(c,a,p,e,ea,ep))
+	bot.expectations.append(Expectation(bot,c,a,p,e,ea,ep))
 
 @module.type("366") #end of names list
 def handle_endofnameslist(bot,message,regex_matches=None):

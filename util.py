@@ -8,8 +8,13 @@ from time import sleep
 
 class Expectation:
 	re_type = type(re.compile(r'hello, world'))
-	def __init__(self,c,a,p,e,ea=[],ep=[[]]):
+	def __init__(self,bot,c,a,p,e,ea=[],ep=[[]]):
 		self.conditions = c#{}
+		regex = self.conditions.get('regex',None)
+		if regex:
+			if "_BOTNAMES_" in regex.pattern:
+				newpattern = re.sub(r"_BOTNAMES_","(?:{})".format("|".join(bot.names)),regex.pattern)
+				self.conditions['regex'] = re.compile(newpattern,regex.flags)
 		self.actions = a#[]
 		self.parameters = p#[[]]
 		self.expiry = datetime.datetime.now() + e#timedelta

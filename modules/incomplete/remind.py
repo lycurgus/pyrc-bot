@@ -41,7 +41,7 @@ def remind_me(bot,message,regex_matches=None):
 		ea = [bot.commands.privmsg]
 		ep = [[line.nick,"you wanted me to remind you: {}".format(message)]]
 		d = timedelta(days=days,hours=hours,minutes=minutes)
-		bot.expectations.append(util.Expectation(c,[],[[]],d,ea,ep))
+		bot.expectations.append(util.Expectation(bot,c,[],[[]],d,ea,ep))
 		if not bot.getcustom("asleep"):
 			bot.commands.privmsg(replyto,"ok! i'll try not to forget :)")
 		else:
