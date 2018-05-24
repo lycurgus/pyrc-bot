@@ -31,6 +31,9 @@ class Expectation:
 		if self.conditions.get('type',None): #message type
 			if not message.command == self.conditions['type']:
 				return None
+		if self.conditions.get('action',None):
+			if not message.is_action:
+				return None
 		if self.conditions.get('or',None): #message contains any of the terms
 			ors = self.conditions['or']
 			if not any([t in message.message for t in ors]):
