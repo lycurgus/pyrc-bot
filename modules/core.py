@@ -52,8 +52,10 @@ def handle_quitreport(bot,message,regex_matches=None):
 def handle_joinreport(bot,message,regex_matches=None):
 	channel = message.message
 	joiner = message.nick
-	if channel and not (joiner == bot.nick):
+	if channel:
 		w.write("${{light_blue}}{}${{reset}} joined ${{light_green}}{}${{reset}}".format(joiner,channel))
+		if channel not in bot.channels.keys():
+			bot.channels[channel] = Channel(channel)
 		bot.channels[channel].add_user(joiner)
 
 @module.type("PART")
