@@ -6,6 +6,7 @@ import module
 from colours import replace
 
 @module.type("PRIVMSG")
+@module.disable
 @module.regex(r"^echo (.*)")
 def echo_fn(bot,message,regex_matches=None):
 	e = regex_matches.group(1)
