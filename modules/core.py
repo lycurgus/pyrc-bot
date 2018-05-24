@@ -129,10 +129,8 @@ def resp_mode(bot,message,regex_matches=None):
 		for c in message.message[1:]:
 			if mode == "+":
 				bot.modes.append(c)
-				print("received mode {}".format(c))
 			else:
 				bot.modes = [m for m in bot.modes if m != c]
-				print("lost mode {}".format(c))
 		if "r" in bot.modes: #nickserv registration came in
 			bot.ns_registered = True
 			for channel in bot.channels_awaiting_auth:
