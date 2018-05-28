@@ -3,7 +3,7 @@ if not ".." in sys.path:
 	sys.path.insert(0,"..")
 
 import module
-from datetime import timedelta
+from datetime import timedelta, datetime
 import random
 import util
 import re
@@ -19,7 +19,6 @@ def break_silence(bot,message,regex_matches=None):
 				"twitches her nose",
 				"looks around for anyone to play with",
 				"looks around for someone to play with",
-				"sips a piña colada",
 				"hops around a bit",
 				"hums a tune",
 				"quacks"
@@ -27,6 +26,8 @@ def break_silence(bot,message,regex_matches=None):
 		if "taiya" in util.lower(bot.channels[channel].users.keys()):
 			actions.append("gives Taiya flowers")
 			actions.append("gives Taiya a hug")
+		if 12 < datetime.now().hour < 20:
+			actions.append("sips a piña colada")
 	else:
 		actions = [
 				"snores",
