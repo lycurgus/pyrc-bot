@@ -81,7 +81,7 @@ class Blackjack:
 				accum += int(card)
 		while aces:
 			accum += 1
-			if accum > 12:
+			if accum < 12:
 				accum += 10
 			aces -= 1
 		if accum < 22:
